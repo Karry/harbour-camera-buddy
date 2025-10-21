@@ -130,10 +130,12 @@ set(CMAKE_AUTORCC ON)
 
 set(HEADER_FILES
     src/CameraBuddy.h
+    src/CameraModel.h
 )
 
 set(SOURCE_FILES
     src/CameraBuddy.cpp
+    src/CameraModel.cpp
 )
 
 # keep qml files in source list - it makes qtcreator happy

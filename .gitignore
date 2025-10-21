@@ -14,3 +14,11 @@ CMakeUserPresets.json
 cmake-build-*
 .idea/
 build/
+rpmbuilddir-aarch64/
+
+debugfiles.list
+debuglinks.list
+debugsourcefiles.list
+debugsources.list
+documentation.list
+elfbins.list
