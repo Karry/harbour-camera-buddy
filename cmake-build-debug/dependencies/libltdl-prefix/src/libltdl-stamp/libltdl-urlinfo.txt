@@ -1,0 +1,12 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=url
+command=/usr/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libltdl-prefix/src/libltdl-stamp/verify-libltdl.cmake;COMMAND;/usr/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libltdl-prefix/src/libltdl-stamp/extract-libltdl.cmake
+source_dir=/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libltdl-prefix/src/libltdl
+work_dir=/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libltdl-prefix/src
+url(s)=/home/karry/SailfishOS/projects/harbour-camera-buddy/dependencies/libtool-2.4.6.tar.gz
+hash=SHA256=e3bd4d5d3d025a36c21dd6af7ea818a2afcd4dfc1ea5a17b39d7854bcd0c06e3
+      no_extract=
+

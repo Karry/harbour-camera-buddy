@@ -1,0 +1,12 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=url
+command=/usr/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/GPhoto2-prefix/src/GPhoto2-stamp/verify-GPhoto2.cmake;COMMAND;/usr/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/GPhoto2-prefix/src/GPhoto2-stamp/extract-GPhoto2.cmake
+source_dir=/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/GPhoto2-prefix/src/GPhoto2
+work_dir=/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/GPhoto2-prefix/src
+url(s)=/home/karry/SailfishOS/projects/harbour-camera-buddy/dependencies/libgphoto2-2.5.29.tar.gz
+hash=SHA256=467eaf95e5385e48786ee115802e24ece00f34ae88ac02f5dfa7c836846c6294
+      no_extract=
+

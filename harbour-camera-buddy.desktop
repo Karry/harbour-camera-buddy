@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+
+X-Nemo-Application-Type=silica-qt5
+
+Icon=harbour-camera-buddy
+Exec=harbour-camera-buddy
+
+Name=Camera Buddy
+
+[X-HarbourBackup]
+BackupPathList=.local/share/cz.karry.camera-buddy/CameraBuddy/:.config/cz.karry.camera-buddy/CameraBuddy/
+
+[X-Sailjail]
+# Internet permissions are necessary for netlink socket to usb device :-)
+Permissions=Internet;USB;RemovableMedia;Pictures;Camera
+OrganizationName=cz.karry.camera-buddy
+ApplicationName=CameraBuddy

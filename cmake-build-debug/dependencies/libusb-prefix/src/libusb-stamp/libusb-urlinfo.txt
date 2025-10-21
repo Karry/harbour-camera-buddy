@@ -1,0 +1,12 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The download step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+method=url
+command=/usr/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libusb-prefix/src/libusb-stamp/verify-libusb.cmake;COMMAND;/usr/bin/cmake;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libusb-prefix/src/libusb-stamp/extract-libusb.cmake
+source_dir=/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libusb-prefix/src/libusb
+work_dir=/home/karry/SailfishOS/projects/harbour-camera-buddy/cmake-build-debug/dependencies/libusb-prefix/src
+url(s)=/home/karry/SailfishOS/projects/harbour-camera-buddy/dependencies/libusb-1.0.26.tar.bz2
+hash=SHA256=12ce7a61fc9854d1d2a1ffe095f7b5fac19ddba095c259e6067a46500381b5a5
+      no_extract=
+

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2024 Camera Buddy
+# Copyright (c) 2025 Lukas Karas <lukas.karas@centrum.cz>
 #
 # Structure of Camera Buddy cmake scripts was inspired by TimeLapse Tools project
 #
@@ -99,23 +99,54 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON) # build should fail when compiler don't supp
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
+add_definitions( -Wall -Wextra -pedantic -Wno-unused-function )
+add_definitions( -fno-omit-frame-pointer -fstack-protector-all -fPIC )
+
+# Do *NOT* turn assertions off in release and rel-with-deb-info modes.
+# CMakes does that by default despite any recent documentation
+# recommending against the practice.
+string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+string( REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+string( REPLACE "/DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+string( REPLACE "-DNDEBUG" "" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+
+# add function name to Qt log messages (even in release build)
+add_definitions( -DQT_MESSAGELOGCONTEXT )
+
+add_definitions(${LIBSAILFISHAPP_DEFINITIONS})
+
+# CMake doesn't add "-pie" by default for executables (CMake issue #14983)
+# it is necessary for accelerated start by mapplauncherd,
+# see https://git.sailfishos.org/mer-core/mapplauncherd for details
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pie")
+
+set(HARBOUR_APP_NAME harbour-camera-buddy)
+
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
 # ==================================================================================================
 # Build executable
 
-set(CAMERA_BUDDY_HEADERS
+set(HEADER_FILES
     src/CameraBuddy.h
 )
 
-set(CAMERA_BUDDY_SOURCES
+set(SOURCE_FILES
     src/CameraBuddy.cpp
 )
 
+# keep qml files in source list - it makes qtcreator happy
+# find qml -type f
+set(QML_FILES
+    qml/main.qml
+    qml/pages/Cover.qml
+    qml/pages/MainPage.qml)
+
 add_executable(harbour-camera-buddy
-    ${CAMERA_BUDDY_SOURCES}
-    ${CAMERA_BUDDY_HEADERS}
+    ${SOURCE_FILES}
+    ${HEADER_FILES}
+    ${QML_FILES}
 )
 
 target_include_directories(harbour-camera-buddy PRIVATE
@@ -131,7 +162,8 @@ target_link_libraries(harbour-camera-buddy
     Qt5::Qml
     Qt5::Quick
     Qt5::Svg
-    SailfishApp::SailfishApp
+
+    ${LIBSAILFISHAPP_LIBRARIES}
     GPhoto2::GPhoto2
 )
 
@@ -139,13 +171,41 @@ if(CAMERA_BUDDY_ENABLE_IPO)
     set_property(TARGET harbour-camera-buddy PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
 endif()
 
+add_dependencies(harbour-camera-buddy translations)
+
 # ==================================================================================================
 # Translations
 
-file(GLOB TRANSLATION_SOURCES
-    translations/*.ts
+# XML files with translated phrases.
+# You can add new language translation just by adding new entry here, and run build.
+# Newly created *.ts file may be edited by linguist tool.
+set(TRANSLATION_TS_FILES
+    translations/en.ts
+
+    translations/cs.ts
 )
-qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TRANSLATION_SOURCES})
+
+# source files that may contains translatable phrases (see tr, qsTr, QT_TRANSLATE_NOOP functions)
+set(TRANSLATION_SOURCE_FILES
+    ${SOURCE_FILES}
+    ${QML_FILES}
+)
+
+# See http://doc.qt.io/qt-5/cmake-manual.html
+#
+# qt5_create_translation macro process translations in two steps:
+#
+#  - collect available phrases inside TRANSLATION_SOURCE_FILES
+#    with lupdate tool and put them into *.ts files if some is missing there.
+#
+#  - create binary translation files (*.qm) from translated phrases available
+#    in *.ts files with lrelease tool
+qt5_create_translation(TRANSLATION_QM_FILES
+    ${TRANSLATION_SOURCE_FILES}
+    ${TRANSLATION_TS_FILES})
+
+add_custom_target(translations ALL DEPENDS ${TRANSLATION_QM_FILES})
+
 
 # ==================================================================================================
 # Install
@@ -158,7 +218,7 @@ install(FILES harbour-camera-buddy.desktop
     DESTINATION share/applications
 )
 
-install(FILES ${QM_FILES}
+install(FILES ${TRANSLATION_QM_FILES}
     DESTINATION share/harbour-camera-buddy/translations
 )
 
