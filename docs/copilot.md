@@ -35,6 +35,15 @@ Application will be ready for to rpm packaging for SailfishOS.
  - After bigger changes, build needs to be verified in SailfishOS SDK environment, `deploy.sh` may be used for that.
  - To be able verify build in Github, there should be github action workflow, at least with ubuntu 24.04.
 
+# Testing
+
+Automated UI testing on SailfishOS is complicated. But at least the QML errors on the first page can be check by starting executable on the phone.
+Just connect phone via ssh and start executable:
+```bash
+ssh xperia
+harbour-camera-buddy
+```
+
 # UI
 
 Application should be consisting from three pages:

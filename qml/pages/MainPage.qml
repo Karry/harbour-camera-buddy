@@ -37,25 +37,34 @@ Page {
                 width: parent.width - 2 * Theme.horizontalPageMargin
             }
 
+            Label {
+                x: Theme.horizontalPageMargin
+                text: qsTr("Connect your DSLR camera via USB and download photos directly to your SailfishOS device.")
+                color: Theme.secondaryColor
+                font.pixelSize: Theme.fontSizeMedium
+                wrapMode: Text.WordWrap
+                width: parent.width - 2 * Theme.horizontalPageMargin
+            }
+
             Button {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Detect Cameras")
+                text: qsTr("View Connected Cameras")
                 onClicked: {
-                    // TODO: Implement camera detection
-                    console.log("Camera detection clicked")
+                    pageStack.push(Qt.resolvedUrl("CamerasPage.qml"))
                 }
             }
 
             SectionHeader {
-                text: qsTr("Connected Cameras")
+                text: qsTr("Quick Actions")
             }
 
-            Label {
-                x: Theme.horizontalPageMargin
-                text: qsTr("No cameras detected")
-                color: Theme.secondaryColor
-                font.pixelSize: Theme.fontSizeMedium
-                width: parent.width - 2 * Theme.horizontalPageMargin
+            Button {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Scan for Cameras")
+                onClicked: {
+                    pageStack.push(Qt.resolvedUrl("CamerasPage.qml"))
+                    cameraModel.refresh()
+                }
             }
         }
     }

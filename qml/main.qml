@@ -5,7 +5,7 @@ ApplicationWindow
 {
     id: appWindow
 
-    initialPage: Component { MainPage { } }
+    initialPage: Qt.resolvedUrl("pages/MainPage.qml")
     cover: Qt.resolvedUrl("pages/Cover.qml")
     allowedOrientations: defaultAllowedOrientations
 }

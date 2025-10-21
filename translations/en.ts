@@ -30,18 +30,35 @@ Buddy</translation>
     </message>
     <message>
         <location filename="../qml/pages/MainPage.qml" line="42"/>
+        <source>Connect your DSLR camera via USB and download photos directly to your SailfishOS device.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="51"/>
+        <source>View Connected Cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="58"/>
+        <source>Quick Actions</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="63"/>
+        <source>Scan for Cameras</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Detect Cameras</source>
-        <translation>Detect Cameras</translation>
+        <translation type="vanished">Detect Cameras</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="50"/>
         <source>Connected Cameras</source>
-        <translation>Connected Cameras</translation>
+        <translation type="vanished">Connected Cameras</translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="55"/>
         <source>No cameras detected</source>
-        <translation>No cameras detected</translation>
+        <translation type="vanished">No cameras detected</translation>
     </message>
 </context>
 </TS>
