@@ -13,6 +13,6 @@ BackupPathList=.local/share/cz.karry.camera-buddy/CameraBuddy/:.config/cz.karry.
 
 [X-Sailjail]
 # Internet permissions are necessary for netlink socket to usb device :-)
-Permissions=Internet;USB;RemovableMedia;Pictures;Camera
+Permissions=Internet;USB;RemovableMedia;Pictures
 OrganizationName=cz.karry.camera-buddy
 ApplicationName=CameraBuddy

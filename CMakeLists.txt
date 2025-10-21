@@ -226,9 +226,20 @@ install(DIRECTORY qml/
     DESTINATION share/harbour-camera-buddy/qml
 )
 
-install(DIRECTORY icons/
-    DESTINATION share/harbour-camera-buddy/icons
-)
+install(FILES icons/86x86/harbour-camera-buddy.png
+    DESTINATION share/icons/hicolor/86x86/apps)
+
+install(FILES icons/108x108/harbour-camera-buddy.png
+    DESTINATION share/icons/hicolor/108x108/apps)
+
+install(FILES icons/128x128/harbour-camera-buddy.png
+    DESTINATION share/icons/hicolor/128x128/apps)
+
+install(FILES icons/256x256/harbour-camera-buddy.png
+    DESTINATION share/icons/hicolor/256x256/apps)
+
+install(FILES icons/172x172/harbour-camera-buddy.png
+    DESTINATION share/icons/hicolor/172x172/apps)
 
 install(FILES ${DEP_LIBS}
     DESTINATION share/harbour-camera-buddy/lib

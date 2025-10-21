@@ -33,6 +33,7 @@
 #include <QTextStream>
 #include <QTranslator>
 #include <QLocale>
+#include <QDebug>
 
 // GPhoto2 includes
 #include <gphoto2/gphoto2.h>
