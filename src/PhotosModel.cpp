@@ -203,7 +203,20 @@ void PhotosModel::refresh() {
     emit selectedCountChanged();
 
     qDebug() << "PhotosModel::refresh() - Starting background photo loading thread";
-    // Load photos in background thread
+
+    // Get camera to use its dedicated thread pool
+    if (!cameraModel || cameraIndex < 0) {
+        qDebug() << "PhotosModel::refresh() - Invalid camera model or index";
+        return;
+    }
+
+    auto camera = cameraModel->getCameraAt(cameraIndex);
+    if (!camera || !camera->threadPool) {
+        qDebug() << "PhotosModel::refresh() - Camera not available or thread pool not initialized";
+        return;
+    }
+
+    // Load photos in camera's dedicated single-threaded pool
     class LoadPhotosRunnable : public QRunnable {
     private:
         PhotosModel* model;
@@ -211,7 +224,7 @@ void PhotosModel::refresh() {
         LoadPhotosRunnable(PhotosModel* m) : model(m) { setAutoDelete(true); }
         void run() override { model->loadPhotosFromCamera(); }
     };
-    QThreadPool::globalInstance()->start(new LoadPhotosRunnable(this));
+    camera->threadPool->start(new LoadPhotosRunnable(this));
 }
 
 void PhotosModel::loadPhotosFromCamera() {
@@ -608,7 +621,14 @@ void PhotosModel::loadThumbnail(int index) {
     };
 
     qDebug() << "Loading thumbnail for photo at index" << index << ":" << photo->fullPath;
-    QThreadPool::globalInstance()->start(new LoadThumbnailRunnable(this, index, photo, camera));
+
+    // Use camera's dedicated single-threaded pool for gphoto2 operations
+    if (!camera->threadPool) {
+        qWarning() << "Camera thread pool not initialized for thumbnail loading";
+        return;
+    }
+
+    camera->threadPool->start(new LoadThumbnailRunnable(this, index, photo, camera));
 }
 
 QByteArray PhotosModel::loadThumbnailData(Camera* camera, GPContext* context, const QString& folder, const QString& filename) {

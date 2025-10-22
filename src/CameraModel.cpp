@@ -23,6 +23,7 @@
 #include <QThread>
 #include <QMutexLocker>
 #include <QCoreApplication>
+#include <QThreadPool>
 
 #include <gphoto2/gphoto2.h>
 
@@ -177,11 +178,21 @@ bool CameraDevice::initialize() {
 
     connected = true;
 
+    // Initialize the single-threaded pool for gphoto2 operations
+    initializeThreadPool();
+
     qDebug() << "Successfully initialized camera:" << toString();
     return true;
 }
 
 void CameraDevice::cleanup() {
+    // Wait for all gphoto2 operations to complete before cleanup
+    if (threadPool) {
+        threadPool->waitForDone();
+        delete threadPool;
+        threadPool = nullptr;
+    }
+
     if (camera) {
         gp_camera_exit(camera, context);
         gp_camera_free(camera);
@@ -189,6 +200,15 @@ void CameraDevice::cleanup() {
     }
     connected = false;
     busy = false;
+}
+
+void CameraDevice::initializeThreadPool() {
+    if (!threadPool) {
+        threadPool = new QThreadPool();
+        // Set to single thread to serialize all gphoto2 operations for this camera
+        threadPool->setMaxThreadCount(1);
+        qDebug() << "Initialized single-threaded pool for camera:" << toString();
+    }
 }
 
 bool CameraDevice::isValid() const {

@@ -24,6 +24,7 @@
 #include <QTimer>
 #include <QSharedPointer>
 #include <QMutex>
+#include <QThreadPool>
 
 #include <gphoto2/gphoto2.h>
 
@@ -36,14 +37,16 @@ struct CameraDevice {
     bool busy;
     Camera* camera;
     GPContext* context;
+    QThreadPool* threadPool;
 
-    CameraDevice() : connected(false), busy(false), camera(nullptr), context(nullptr) {}
+    CameraDevice() : connected(false), busy(false), camera(nullptr), context(nullptr), threadPool(nullptr) {}
     ~CameraDevice();
 
     QString toString() const;
     bool initialize();
     void cleanup();
     bool isValid() const;
+    void initializeThreadPool();
 };
 
 Q_DECLARE_METATYPE(CameraDevice*)
