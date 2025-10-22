@@ -131,10 +131,12 @@ set(CMAKE_AUTORCC ON)
 set(HEADER_FILES
     src/CameraBuddy.h
     src/CameraModel.h
+    src/PhotosModel.h
 )
 
 set(SOURCE_FILES
     src/CameraBuddy.cpp
+    src/PhotosModel.cpp
     src/CameraModel.cpp
 )
 
@@ -142,9 +144,11 @@ set(SOURCE_FILES
 # find qml -type f
 set(QML_FILES
     qml/main.qml
+    qml/pages/MainPage.qml
+    qml/pages/CamerasPage.qml
+    qml/pages/PhotosPage.qml
     qml/pages/Cover.qml
-    qml/pages/MainPage.qml)
-
+)
 add_executable(harbour-camera-buddy
     ${SOURCE_FILES}
     ${HEADER_FILES}
