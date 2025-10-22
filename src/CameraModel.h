@@ -96,7 +96,7 @@ public:
 
 private:
     void scanForCameras();
-    QList<QSharedPointer<CameraDevice>> listGPhoto2Cameras();
+    QList<QSharedPointer<CameraDevice>> detectGPhoto2Cameras();
     void initializeGPhoto2();
     void cleanupGPhoto2();
 

@@ -18,8 +18,8 @@
 */
 
 #include <harbour-camera-buddy/private/Version.h>
-#include "CameraBuddy.h"
-#include "CameraModel.h"
+#include <CameraBuddy.h>
+#include <CameraModel.h>
 
 // SFOS
 #include <sailfishapp/sailfishapp.h>
@@ -140,10 +140,7 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     // Initialize GPhoto2
     cameraBuddy.initializeGPhoto2();
 
-    // Register QML types
-    qmlRegisterType<CameraModel>("harbour.camerabuddy", 1, 0, "CameraModel");
-
-    // Create camera model instance
+    // Create camera model instance (singleton)
     CameraModel cameraModel;
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
