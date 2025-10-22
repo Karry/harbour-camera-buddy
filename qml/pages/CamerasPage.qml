@@ -80,12 +80,12 @@ Page {
                         }
 
                         Label {
-                            text: qsTr("Model: %1").arg(model.model || qsTr("Unknown"))
+                            text: qsTr("Model: %1").arg(model.cameraModel || qsTr("Unknown"))
                             color: Theme.secondaryColor
                             font.pixelSize: Theme.fontSizeSmall
                             truncationMode: TruncationMode.Fade
                             width: parent.width
-                            visible: model.model && model.model.length > 0
+                            visible: (model.cameraModel || "").length > 0
                         }
 
                         Label {
@@ -94,7 +94,7 @@ Page {
                             font.pixelSize: Theme.fontSizeSmall
                             truncationMode: TruncationMode.Fade
                             width: parent.width
-                            visible: model.port && model.port.length > 0
+                            visible: (model.port || "").length > 0
                         }
 
                         Label {
@@ -103,7 +103,7 @@ Page {
                             font.pixelSize: Theme.fontSizeSmall
                             truncationMode: TruncationMode.Fade
                             width: parent.width
-                            visible: model.serialNumber && model.serialNumber.length > 0
+                            visible: (model.serialNumber || "").length > 0
                         }
                     }
 
@@ -134,7 +134,7 @@ Page {
                         if (model.connected && !model.busy) {
                             // Navigate to photos page for this camera
                             pageStack.push(Qt.resolvedUrl("PhotosPage.qml"), {
-                                cameraIndex: model.index,
+                                cameraIndex: index,
                                 cameraName: model.name || qsTr("Unknown Camera")
                             })
                         }

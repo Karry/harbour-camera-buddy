@@ -408,6 +408,8 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2Cameras() {
         camera->context = globalContext;
         camera->connected = false; // Will be set to true only after successful initialization
 
+        qDebug() << "Detected camera:" << camera->model << "on port:" << camera->port << "name:" << camera->name;
+
         result.append(camera);
     }
 
@@ -451,7 +453,7 @@ QHash<int, QByteArray> CameraModel::roleNames() const {
     QHash<int, QByteArray> roles = QAbstractItemModel::roleNames();
 
     roles[NameRole] = "name";
-    roles[ModelRole] = "model";
+    roles[ModelRole] = "cameraModel";
     roles[PortRole] = "port";
     roles[SerialNumberRole] = "serialNumber";
     roles[ConnectedRole] = "connected";
