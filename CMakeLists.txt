@@ -246,3 +246,11 @@ install(FILES icons/172x172/harbour-camera-buddy.png
 install(FILES ${DEP_LIBS}
     DESTINATION share/harbour-camera-buddy/lib
 )
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dependencies/installroot/lib/libgphoto2_port
+    DESTINATION share/${HARBOUR_APP_NAME}/lib
+    FILES_MATCHING PATTERN "*.so")
+
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dependencies/installroot/lib/libgphoto2/2.5.29
+    DESTINATION share/${HARBOUR_APP_NAME}/lib/libgphoto2
+    FILES_MATCHING PATTERN "*.so")
