@@ -112,22 +112,70 @@ bool CameraDevice::initialize() {
         }
     }
 
-    // Try to initialize the camera
+    // Clean up lists before initialization
+    gp_abilities_list_free(abilities);
+    gp_port_info_list_free(portinfolist);
+
+    // Try to initialize the camera with USB-specific handling
     ret = gp_camera_init(camera, context);
     if (ret < GP_OK) {
         qWarning() << "Failed to initialize camera" << model << "on" << port << ":" << gp_result_as_string(ret);
-        gp_abilities_list_free(abilities);
-        gp_port_info_list_free(portinfolist);
-        gp_camera_free(camera);
-        camera = nullptr;
-        return false;
+
+        // If initialization failed with USB device claim error, try to reset the port
+        if (ret == GP_ERROR_IO_USB_CLAIM) {
+            qDebug() << "USB claim failed, attempting to reset camera connection...";
+
+            // Exit and re-create camera object
+            gp_camera_exit(camera, context);
+            gp_camera_free(camera);
+
+            // Wait a bit before retry
+            QThread::msleep(1000);
+
+            // Try again with new camera object
+            ret = gp_camera_new(&camera);
+            if (ret >= GP_OK) {
+                // Re-apply settings
+                if (modelIndex >= 0) {
+                    CameraAbilitiesList *newAbilities = nullptr;
+                    if (gp_abilities_list_new(&newAbilities) >= GP_OK) {
+                        if (gp_abilities_list_load(newAbilities, context) >= GP_OK) {
+                            CameraAbilities cameraAbilities;
+                            if (gp_abilities_list_get_abilities(newAbilities, modelIndex, &cameraAbilities) >= GP_OK) {
+                                gp_camera_set_abilities(camera, cameraAbilities);
+                            }
+                        }
+                        gp_abilities_list_free(newAbilities);
+                    }
+                }
+
+                if (portIndex >= 0) {
+                    GPPortInfoList *newPortList = nullptr;
+                    if (gp_port_info_list_new(&newPortList) >= GP_OK) {
+                        if (gp_port_info_list_load(newPortList) >= GP_OK) {
+                            GPPortInfo portInfo;
+                            if (gp_port_info_list_get_info(newPortList, portIndex, &portInfo) >= GP_OK) {
+                                gp_camera_set_port_info(camera, portInfo);
+                            }
+                        }
+                        gp_port_info_list_free(newPortList);
+                    }
+                }
+
+                // Second initialization attempt
+                ret = gp_camera_init(camera, context);
+            }
+        }
+
+        if (ret < GP_OK) {
+            qWarning() << "Second initialization attempt also failed:" << gp_result_as_string(ret);
+            gp_camera_free(camera);
+            camera = nullptr;
+            return false;
+        }
     }
 
     connected = true;
-
-    // Cleanup
-    gp_abilities_list_free(abilities);
-    gp_port_info_list_free(portinfolist);
 
     qDebug() << "Successfully initialized camera:" << toString();
     return true;
@@ -238,32 +286,64 @@ void CameraModel::scanForCameras() {
         return;
     }
 
-    QList<QSharedPointer<CameraDevice>> newCameras = listGPhoto2Cameras();
+    // First, detect available cameras without initializing them
+    QList<QSharedPointer<CameraDevice>> detectedCameras = detectGPhoto2Cameras();
 
     // Compare with existing cameras and update the model
     bool changed = false;
+    QList<QSharedPointer<CameraDevice>> newCameras;
 
-    if (newCameras.size() != cameras.size()) {
-        changed = true;
-    } else {
-        // Check if any camera changed
-        for (int i = 0; i < newCameras.size(); ++i) {
-            if (i >= cameras.size() ||
-                newCameras[i]->name != cameras[i]->name ||
-                newCameras[i]->port != cameras[i]->port ||
-                newCameras[i]->model != cameras[i]->model) {
-                changed = true;
+    // Check each detected camera
+    for (const auto &detected : detectedCameras) {
+        QSharedPointer<CameraDevice> existingCamera;
+
+        // Look for this camera in our existing list
+        for (const auto &existing : cameras) {
+            if (existing->model == detected->model && existing->port == detected->port) {
+                existingCamera = existing;
                 break;
             }
         }
+
+        if (existingCamera) {
+            // Camera already exists, keep the existing one (preserves connection state)
+            newCameras.append(existingCamera);
+            qDebug() << "Keeping existing camera:" << existingCamera->toString() << "connected:" << existingCamera->connected;
+        } else {
+            // New camera detected, try to initialize it
+            qDebug() << "New camera detected, attempting to initialize:" << detected->toString();
+            if (detected->initialize()) {
+                qDebug() << "Successfully initialized new camera:" << detected->toString();
+            } else {
+                qWarning() << "Failed to initialize new camera:" << detected->toString();
+                detected->connected = false;
+            }
+            newCameras.append(detected);
+            changed = true;
+        }
+    }
+
+    // Check if any existing cameras were removed
+    if (newCameras.size() != cameras.size()) {
+        changed = true;
     }
 
     if (changed) {
         beginResetModel();
 
-        // Cleanup old cameras
+        // Cleanup cameras that are no longer detected
         for (auto &camera : cameras) {
-            camera->cleanup();
+            bool found = false;
+            for (const auto &newCamera : newCameras) {
+                if (camera->model == newCamera->model && camera->port == newCamera->port) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                qDebug() << "Cleaning up removed camera:" << camera->toString();
+                camera->cleanup();
+            }
         }
 
         cameras = newCameras;
@@ -273,12 +353,14 @@ void CameraModel::scanForCameras() {
         qDebug() << "Found" << cameras.size() << "cameras";
 
         for (const auto &camera : cameras) {
-            qDebug() << "  " << camera->toString();
+            qDebug() << "  " << camera->toString() << "connected:" << camera->connected;
         }
+    } else {
+        qDebug() << "No camera changes detected";
     }
 }
 
-QList<QSharedPointer<CameraDevice>> CameraModel::listGPhoto2Cameras() {
+QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2Cameras() {
     QList<QSharedPointer<CameraDevice>> result;
 
     if (!globalContext) {
@@ -324,13 +406,9 @@ QList<QSharedPointer<CameraDevice>> CameraModel::listGPhoto2Cameras() {
         camera->port = QString::fromUtf8(port);
         camera->name = QString("%1 (%2)").arg(camera->model, camera->port);
         camera->context = globalContext;
+        camera->connected = false; // Will be set to true only after successful initialization
 
-        // Try to initialize the camera to verify it's working
-        if (camera->initialize()) {
-            result.append(camera);
-        } else {
-            qWarning() << "Failed to initialize camera:" << camera->toString();
-        }
+        result.append(camera);
     }
 
     gp_list_free(cameraList);
