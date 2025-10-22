@@ -126,7 +126,10 @@ Page {
                     id: checkbox
                     anchors.verticalCenter: parent.verticalCenter
                     checked: model.selected
-                    onClicked: photosModel.selectPhoto(index, checked)
+                    automaticCheck: false
+                    onClicked: {
+                        photosModel.selectPhoto(index, !model.selected)
+                    }
                 }
             }
         }
