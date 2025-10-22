@@ -31,7 +31,16 @@ Application will be ready for to rpm packaging for SailfishOS.
 
 # Compilation
 
- - For fast verification that build is working, we may build it locally. 
+ - For fast verification that build is working, we may build it locally.
+   Build the app in the build directory, keep to avoid of clean step, to speed up next builds.
+
+```bash
+mkdir -p build
+cd build
+cmake ..
+make -j8
+```
+   
  - After bigger changes, build needs to be verified in SailfishOS SDK environment, `deploy.sh` may be used for that.
  - To be able verify build in Github, there should be github action workflow, at least with ubuntu 24.04.
 
