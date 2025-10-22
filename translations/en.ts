@@ -168,12 +168,12 @@ Buddy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="136"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="138"/>
         <source>No photos found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="137"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="139"/>
         <source>Pull down to refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -181,7 +181,7 @@ Buddy</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/PhotosModel.cpp" line="255"/>
+        <location filename="../src/PhotosModel.cpp" line="258"/>
         <source>Camera not available or not connected</source>
         <translation type="unfinished"></translation>
     </message>

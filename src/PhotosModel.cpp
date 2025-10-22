@@ -142,6 +142,9 @@ bool PhotosModel::setData(const QModelIndex &index, const QVariant &value, int r
     }
 
     if (role == SelectedRole) {
+        if (photo->selected == value.toBool()) {
+            return true;
+        }
         photo->selected = value.toBool();
         emit dataChanged(index, index, {SelectedRole});
         emit selectedCountChanged();
@@ -523,6 +526,9 @@ void PhotosModel::selectJpegs() {
 
 void PhotosModel::selectPhoto(int index, bool select) {
     if (index < 0 || index >= photos.size()) {
+        return;
+    }
+    if (photos[index]->selected == select) {
         return;
     }
 
