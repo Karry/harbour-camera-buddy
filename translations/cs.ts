@@ -124,37 +124,42 @@ Buddy</source>
 <context>
     <name>PhotosPage</name>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="41"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="33"/>
         <source>Photos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="46"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="38"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="50"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="42"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="54"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="46"/>
+        <source>Select JPEGs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PhotosPage.qml" line="50"/>
         <source>Deselect All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="62"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="58"/>
         <source>Download Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="140"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="136"/>
         <source>No photos found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="141"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="137"/>
         <source>Pull down to refresh</source>
         <translation type="unfinished"></translation>
     </message>
@@ -162,7 +167,7 @@ Buddy</source>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/PhotosModel.cpp" line="239"/>
+        <location filename="../src/PhotosModel.cpp" line="242"/>
         <source>Camera not available or not connected</source>
         <translation type="unfinished"></translation>
     </message>

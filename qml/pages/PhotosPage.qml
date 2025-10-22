@@ -84,7 +84,7 @@ Page {
                     Image {
                         anchors.fill: parent
                         anchors.margins: 2
-                        source: model.thumbnailAvailable ? "data:image/jpeg;base64," + Qt.btoa(model.thumbnailData) : ""
+                        source: model.thumbnailAvailable ? ("data:image/jpeg;base64," + model.thumbnailBase64) : ""
                         fillMode: Image.PreserveAspectCrop
                         asynchronous: true
 
