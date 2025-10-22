@@ -100,6 +100,8 @@ QVariant PhotosModel::data(const QModelIndex &index, int role) const {
         return photo->thumbnail_available;
     case ThumbnailDataRole:
         return photo->thumbnailData;
+    case ThumbnailBase64Role:
+        return QString::fromUtf8(photo->thumbnailData.toBase64());
     default:
         return QVariant();
     }
@@ -118,6 +120,7 @@ QHash<int, QByteArray> PhotosModel::roleNames() const {
     roles[SelectedRole] = "selected";
     roles[ThumbnailAvailableRole] = "thumbnailAvailable";
     roles[ThumbnailDataRole] = "thumbnailData";
+    roles[ThumbnailBase64Role] = "thumbnailBase64";
     return roles;
 }
 
@@ -582,20 +585,29 @@ void PhotosModel::loadThumbnail(int index) {
             try {
                 QByteArray thumbnailData = model->loadThumbnailData(camera->camera, camera->context, photo->folder, photo->name);
 
-                QTimer::singleShot(0, model, [this, thumbnailData]() {
-                    photo->thumbnailData = thumbnailData;
-                    photo->thumbnail_available = !thumbnailData.isEmpty();
+                auto photoCopy = photo; // Capture shared pointer
+                auto modelCopy = model;
+                auto indexCopy = index;
 
-                    auto modelIndex = model->index(index);
-                    emit model->dataChanged(modelIndex, modelIndex, {PhotosModel::ThumbnailAvailableRole, PhotosModel::ThumbnailDataRole});
-                    emit model->thumbnailLoaded(index);
+                QTimer::singleShot(0, model, [photoCopy, modelCopy, indexCopy, thumbnailData]() {
+                    photoCopy->thumbnailData = thumbnailData;
+                    photoCopy->thumbnail_available = !thumbnailData.isEmpty();
+
+                    auto modelIndex = modelCopy->index(indexCopy);
+                    emit modelCopy->dataChanged(modelIndex, modelIndex,
+                        {ThumbnailAvailableRole, ThumbnailDataRole, ThumbnailBase64Role});
+                    emit modelCopy->thumbnailLoaded(indexCopy);
+                    qDebug() << "Thumbnail loaded for photo at index" << indexCopy; //  << "base64:" << QString::fromUtf8(thumbnailData.toBase64());
                 });
 
             } catch (...) {
                 // Thumbnail loading failed, but don't emit error for this
+                qWarning() << "Failed to load thumbnail for photo at index" << index;
             }
         }
     };
+
+    qDebug() << "Loading thumbnail for photo at index" << index << ":" << photo->fullPath;
     QThreadPool::globalInstance()->start(new LoadThumbnailRunnable(this, index, photo, camera));
 }
 
@@ -615,7 +627,11 @@ QByteArray PhotosModel::loadThumbnailData(Camera* camera, GPContext* context, co
         unsigned long fileSize = 0;
         if (gp_file_get_data_and_size(file, &fileData, &fileSize) == GP_OK) {
             data = QByteArray(fileData, fileSize);
+        } else {
+            qWarning() << "Failed to get thumbnail data and size for" << folder + "/" + filename;
         }
+    } else {
+        qWarning() << "Failed to get thumbnail file for" << folder + "/" + filename << ", gphoto2 error code:" << ret;
     }
 
     gp_file_free(file);

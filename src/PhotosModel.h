@@ -97,7 +97,8 @@ public:
         DimensionsRole = Qt::UserRole + 7,
         SelectedRole = Qt::UserRole + 8,
         ThumbnailAvailableRole = Qt::UserRole + 9,
-        ThumbnailDataRole = Qt::UserRole + 10
+        ThumbnailDataRole = Qt::UserRole + 10,
+        ThumbnailBase64Role = Qt::UserRole + 11
     };
     Q_ENUM(Roles)
 
@@ -122,8 +123,9 @@ private:
     void loadPhotosFromCamera();
     QList<QSharedPointer<PhotoInfo>> scanCameraFolders(Camera* camera, GPContext* context);
     QList<QSharedPointer<PhotoInfo>> scanFolder(Camera* camera, GPContext* context, const QString& folder);
-    QByteArray loadThumbnailData(Camera* camera, GPContext* context, const QString& folder, const QString& filename);
     PhotoInfo getPhotoInfo(Camera* camera, GPContext* context, const QString& folder, const QString& filename);
+
+    static QByteArray loadThumbnailData(Camera* camera, GPContext* context, const QString& folder, const QString& filename);
 
 private:
     QList<QSharedPointer<PhotoInfo>> photos;
