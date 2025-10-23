@@ -2,7 +2,8 @@
 
 [![Last build on Ubuntu 24.04](https://github.com/Karry/harbour-camera-buddy/actions/workflows/build.yml/badge.svg)](https://github.com/Karry/harbour-camera-buddy/actions/workflows/build.yml)
 
-Simple Sailfish OS utility for downloading photos from external DSLR cameras.
+Camera Buddy is a SailfishOS application that provides a user-friendly interface for connecting to external DSLR cameras
+via USB or WiFi using the GPhoto2 library. It allows you to browse and download photos from connected cameras directly to your SailfishOS device.
 
 ## Disclaimer
 
@@ -11,9 +12,15 @@ It was may experiment howto recent AI tools can handle C++/QML development for m
 Code is ugly and ~probably~ DEFINITELY contains bugs, but at least it compiles and basic functionality works.
 It may explode! You have been warned.
 
-## Overview
-
-Camera Buddy is a SailfishOS application that provides a user-friendly interface for connecting to external DSLR cameras via USB or WiFi using the GPhoto2 library. It allows you to browse and download photos from connected cameras directly to your SailfishOS device.
+<img alt="List of connected cameras"
+    width="237" height="422"
+    src="https://raw.githubusercontent.com/Karry/harbour-camera-buddy/master/graphics/cameras.png" />
+<img alt="Photo browsing"
+    width="237" height="422"
+    src="https://raw.githubusercontent.com/Karry/harbour-camera-buddy/master/graphics/photos.png" />
+<img alt="Downloading"
+    width="237" height="422"
+    src="https://raw.githubusercontent.com/Karry/harbour-camera-buddy/master/graphics/downloading.png" />
 
 ## Features
 
@@ -27,8 +34,6 @@ Camera Buddy is a SailfishOS application that provides a user-friendly interface
 
 The project includes automated builds and testing via GitHub Actions:
 - **Ubuntu 24.04 Build**: Verifies compilation with latest dependencies
-- **Code Quality**: Static analysis and formatting checks
-- **Structure Validation**: Ensures SailfishOS packaging requirements
 
 ## Dependencies
 
@@ -36,6 +41,7 @@ The project includes automated builds and testing via GitHub Actions:
 - libusb (USB camera support)
 - Qt5 (Core, DBus, Multimedia, Qml, Quick, Svg)
 - SailfishApp framework
+- Silica UI components
 
 ## Building
 
