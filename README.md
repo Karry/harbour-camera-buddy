@@ -13,13 +13,13 @@ Code is ugly and ~probably~ DEFINITELY contains bugs, but at least it compiles a
 It may explode! You have been warned.
 
 <img alt="List of connected cameras"
-    width="237" height="422"
+    width="270" height="630"
     src="https://raw.githubusercontent.com/Karry/harbour-camera-buddy/master/graphics/cameras.png" />
 <img alt="Photo browsing"
-    width="237" height="422"
+    width="270" height="630"
     src="https://raw.githubusercontent.com/Karry/harbour-camera-buddy/master/graphics/photos.png" />
 <img alt="Downloading"
-    width="237" height="422"
+    width="270" height="630"
     src="https://raw.githubusercontent.com/Karry/harbour-camera-buddy/master/graphics/downloading.png" />
 
 ## Features
