@@ -116,7 +116,8 @@ public:
     Q_INVOKABLE CameraModel* getCameraModel() const { return cameraModel; }
     Q_INVOKABLE void setCameraModel(CameraModel* model);
     Q_INVOKABLE QSharedPointer<PhotoInfo> getPhotoAt(int index) const;
-    Q_INVOKABLE QList<QSharedPointer<PhotoInfo>> getSelectedPhotos() const;
+    Q_INVOKABLE QVariantList getSelectedPhotos() const;
+    Q_INVOKABLE QVariant getCamera() const;
 
 
 private:

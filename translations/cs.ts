@@ -84,6 +84,49 @@ Buddy</source>
     </message>
 </context>
 <context>
+    <name>DownloadPage</name>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="48"/>
+        <source>Downloading Photos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="124"/>
+        <source>Pending...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="125"/>
+        <source>Downloading... %1%</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="126"/>
+        <source>Completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="127"/>
+        <source>Error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="150"/>
+        <source>No downloads</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="151"/>
+        <source>No photos selected for download</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/DownloadPage.qml" line="170"/>
+        <source>Overall Progress: %1 / %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>MainPage</name>
     <message>
         <location filename="../qml/pages/MainPage.qml" line="14"/>
@@ -124,42 +167,48 @@ Buddy</source>
 <context>
     <name>PhotosPage</name>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="33"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="32"/>
+        <source>Download to</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/PhotosPage.qml" line="67"/>
         <source>Photos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="38"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="72"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="42"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="76"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="46"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="80"/>
         <source>Select JPEGs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="50"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="84"/>
         <source>Deselect All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="58"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="88"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="97"/>
         <source>Download Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="138"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="175"/>
         <source>No photos found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="139"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="176"/>
         <source>Pull down to refresh</source>
         <translation type="unfinished"></translation>
     </message>

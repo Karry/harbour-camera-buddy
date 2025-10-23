@@ -21,6 +21,7 @@
 #include <CameraBuddy.h>
 #include <CameraModel.h>
 #include <PhotosModel.h>
+#include <DownloadModel.h>
 
 // SFOS
 #include <sailfishapp/sailfishapp.h>
@@ -142,9 +143,14 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     // Initialize GPhoto2
     cameraBuddy.initializeGPhoto2();
 
+    // Register metatypes for QML
+    qRegisterMetaType<QSharedPointer<PhotoInfo>>("QSharedPointer<PhotoInfo>");
+    qRegisterMetaType<QSharedPointer<CameraDevice>>("QSharedPointer<CameraDevice>");
+
     // Register QML types
     qmlRegisterType<PhotosModel>("harbour.camera.buddy", 1, 0, "PhotosModel");
     qmlRegisterType<CameraModel>("harbour.camera.buddy", 1, 0, "CameraModel");
+    qmlRegisterType<DownloadModel>("harbour.camera.buddy", 1, 0, "DownloadModel");
 
     // Create camera model instance (singleton)
     CameraModel cameraModel;

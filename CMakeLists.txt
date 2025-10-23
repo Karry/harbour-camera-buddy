@@ -138,6 +138,7 @@ set(SOURCE_FILES
     src/CameraBuddy.cpp
     src/PhotosModel.cpp
     src/CameraModel.cpp
+    src/DownloadModel.cpp
 )
 
 # keep qml files in source list - it makes qtcreator happy
@@ -147,6 +148,7 @@ set(QML_FILES
     qml/pages/MainPage.qml
     qml/pages/CamerasPage.qml
     qml/pages/PhotosPage.qml
+    qml/pages/DownloadPage.qml
     qml/pages/Cover.qml
 )
 add_executable(harbour-camera-buddy

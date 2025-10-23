@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import Sailfish.Pickers 1.0
 import harbour.camera.buddy 1.0
 
 Page {
@@ -22,6 +23,52 @@ Page {
         console.log("  photosPage.cameraIndex:", photosPage.cameraIndex)
 
         photosModel.cameraModel = cameraModel
+    }
+
+    Component {
+        id: folderPickerDialog
+
+        FolderPickerDialog {
+            id: folderPickerDialog2
+            title: qsTr("Download to")
+            path: StandardPaths.pictures
+            property bool downloadRequested: false
+            onAccepted: {
+                console.log("Selected download folder:", selectedPath);
+                downloadRequested = true; // Warning: cannot pop while transition is in progress, so we wait until dialog is inactive
+                // TODO: it is possible to do it better?
+            }
+            Component.onDestruction: {
+                console.log("FolderPickerDialog destruction");
+                if (downloadRequested) {
+                    // Get selected photos directly from PhotosModel
+                    var selectedPhotos = photosModel.getSelectedPhotos()
+
+                    if (selectedPhotos.length > 0) {
+                        // Open download page with camera and selected photos
+                        console.log("Downloading " + photosModel.selectedCount + " selected photos.");
+
+                        // Completes any running transition animation immediately.
+                        // To avoid warning: cannot pop while transition is in progress
+                        pageStack.completeAnimation()
+
+                        var downloadPage = pageStack.push(Qt.resolvedUrl("DownloadPage.qml"), {
+                            downloadPath: selectedPath,
+                            selectedPhotos: selectedPhotos,
+                            camera: photosModel.getCamera()
+                        })
+                    } else {
+                        console.log("No photos selected for download.");
+                    }
+                }
+            }
+        }
+    }
+
+    function downloadSelected() {
+        console.log("Opening folder picker dialog for download destination, default: " + folderPickerDialog.path)
+        pageStack.push(folderPickerDialog)
+        return true
     }
 
     SilicaListView {
@@ -50,16 +97,18 @@ Page {
                 text: qsTr("Deselect All")
                 onClicked: photosModel.selectAll(false)
             }
+            MenuItem {
+                text: qsTr("Download Selected") + " (" + photosModel.selectedCount + ")"
+                visible: photosModel.selectedCount > 0
+                onClicked: downloadSelected()
+            }
         }
 
         PushUpMenu {
             visible: photosModel.selectedCount > 0
             MenuItem {
                 text: qsTr("Download Selected") + " (" + photosModel.selectedCount + ")"
-                onClicked: {
-                    // TODO: Implement download functionality
-                    console.log("Download selected photos")
-                }
+                onClicked: downloadSelected()
             }
         }
 
