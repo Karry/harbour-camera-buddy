@@ -1,8 +1,15 @@
-# harbour-camera-buddy
+# Camera Buddy for SailfishOS
 
 [![Last build on Ubuntu 24.04](https://github.com/Karry/harbour-camera-buddy/actions/workflows/build.yml/badge.svg)](https://github.com/Karry/harbour-camera-buddy/actions/workflows/build.yml)
 
-Sailfish OS UI for Gphoto2
+Simple Sailfish OS utility for downloading photos from external DSLR cameras.
+
+## Disclaimer
+
+This application was vibe-coded using GitHub Copilot AI assistant based on provided instructions and my manual corrections.
+It was may experiment howto recent AI tools can handle C++/QML development for minor platform like SailfishOS.
+Code is ugly and ~probably~ DEFINITELY contains bugs, but at least it compiles and basic functionality works.
+It may explode! You have been warned.
 
 ## Overview
 
