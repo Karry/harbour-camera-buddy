@@ -45,8 +45,6 @@ QString PhotoInfo::sizeString() const {
 
 PhotosModel::PhotosModel(QObject *parent)
     : QAbstractListModel(parent)
-    , cameraModel(nullptr)
-    , cameraIndex(-1)
     , loading(false)
     , thumbnailTimer(new QTimer(this))
 {
@@ -154,30 +152,15 @@ bool PhotosModel::setData(const QModelIndex &index, const QVariant &value, int r
     return false;
 }
 
-void PhotosModel::setCameraModel(CameraModel* model) {
-    if (cameraModel == model) {
-        return;
-    }
+void PhotosModel::setCamera(const QVariant &cameraVariant) {
+    camera = cameraVariant.value<QSharedPointer<CameraDevice>>();
 
-    cameraModel = model;
-    refresh();
-    emit cameraModelChanged();
-}
-
-void PhotosModel::setCameraIndex(int index) {
-    if (cameraIndex == index) {
-        return;
-    }
-
-    cameraIndex = index;
-
-    if (cameraModel && index >= 0 && index < cameraModel->rowCount()) {
-        cameraName = cameraModel->getCameraName(index);
+    if (camera) {
+        cameraName = camera->model;
     } else {
         cameraName.clear();
     }
 
-    emit cameraIndexChanged();
     emit cameraNameChanged();
 
     refresh();
@@ -186,11 +169,10 @@ void PhotosModel::setCameraIndex(int index) {
 void PhotosModel::refresh() {
     qDebug() << "PhotosModel::refresh() called";
     qDebug() << "  loading:" << loading;
-    qDebug() << "  cameraIndex:" << cameraIndex;
-    qDebug() << "  cameraModel:" << (cameraModel ? "valid" : "null");
+    qDebug() << "  camera:" << (camera ? "valid" : "null");
 
-    if (loading || cameraIndex < 0 || !cameraModel) {
-        qDebug() << "PhotosModel::refresh() - Skipping: loading=" << loading << ", cameraIndex=" << cameraIndex << ", cameraModel=" << (cameraModel ? "valid" : "null");
+    if (loading || !camera) {
+        qDebug() << "PhotosModel::refresh() - Skipping: loading=" << loading << ", camera=" << (camera ? "valid" : "null");
         return;
     }
 
@@ -207,15 +189,10 @@ void PhotosModel::refresh() {
 
     qDebug() << "PhotosModel::refresh() - Starting background photo loading thread";
 
-    // Get camera to use its dedicated thread pool
-    if (!cameraModel || cameraIndex < 0) {
-        qDebug() << "PhotosModel::refresh() - Invalid camera model or index";
-        return;
-    }
-
-    auto camera = cameraModel->getCameraAt(cameraIndex);
     if (!camera || !camera->threadPool) {
         qDebug() << "PhotosModel::refresh() - Camera not available or thread pool not initialized";
+        loading = false;
+        emit loadingChanged();
         return;
     }
 
@@ -234,21 +211,10 @@ void PhotosModel::loadPhotosFromCamera() {
     qDebug() << "PhotosModel::loadPhotosFromCamera() - Background thread started";
     QMutexLocker locker(&loadMutex);
 
-    qDebug() << "  cameraModel:" << (cameraModel ? "valid" : "null");
-    qDebug() << "  cameraIndex:" << cameraIndex;
+    qDebug() << "  camera:" << (camera ? "valid" : "null");
 
-    if (!cameraModel || cameraIndex < 0) {
-        qDebug() << "PhotosModel::loadPhotosFromCamera() - Invalid camera model or index";
-        loading = false;
-        emit loadingChanged();
-        return;
-    }
-
-    qDebug() << "PhotosModel::loadPhotosFromCamera() - Getting camera at index" << cameraIndex;
-    auto camera = cameraModel->getCameraAt(cameraIndex);
     if (!camera || !camera->camera || !camera->context) {
         qDebug() << "PhotosModel::loadPhotosFromCamera() - Camera not available or not connected";
-        qDebug() << "  camera pointer:" << (camera ? "valid" : "null");
         if (camera) {
             qDebug() << "  camera->camera:" << (camera->camera ? "valid" : "null");
             qDebug() << "  camera->context:" << (camera->context ? "valid" : "null");
@@ -576,14 +542,14 @@ QVariantList PhotosModel::getSelectedPhotos() const {
 }
 
 QVariant PhotosModel::getCamera() const {
-    if (!cameraModel || cameraIndex < 0) {
+    if (!camera) {
         return QVariant();
     }
-    return QVariant::fromValue(cameraModel->getCameraAt(cameraIndex));
+    return QVariant::fromValue(camera);
 }
 
 void PhotosModel::loadThumbnail(int index) {
-    if (index < 0 || index >= photos.size() || !cameraModel || cameraIndex < 0) {
+    if (index < 0 || index >= photos.size() || !camera) {
         return;
     }
 
@@ -592,7 +558,6 @@ void PhotosModel::loadThumbnail(int index) {
         return; // Already loaded
     }
 
-    auto camera = cameraModel->getCameraAt(cameraIndex);
     if (!camera || !camera->camera || !camera->context) {
         return;
     }

@@ -14,7 +14,6 @@ Page {
 
     PhotosModel {
         id: photosModel
-        cameraIndex: photosPage.cameraIndex
     }
 
     Component.onCompleted: {
@@ -22,7 +21,11 @@ Page {
         console.log("  global cameraModel:", cameraModel)
         console.log("  photosPage.cameraIndex:", photosPage.cameraIndex)
 
-        photosModel.cameraModel = cameraModel
+        // Get camera from cameraModel and set it on photosModel
+        if (cameraModel && cameraIndex >= 0) {
+            var camera = cameraModel.getCameraAt(cameraIndex)
+            photosModel.setCamera(camera)
+        }
     }
 
     Component {
