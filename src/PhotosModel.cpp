@@ -564,14 +564,22 @@ QSharedPointer<PhotoInfo> PhotosModel::getPhotoAt(int index) const {
     return photos[index];
 }
 
-QList<QSharedPointer<PhotoInfo>> PhotosModel::getSelectedPhotos() const {
-    QList<QSharedPointer<PhotoInfo>> selected;
+QVariantList PhotosModel::getSelectedPhotos() const {
+    QVariantList selected;
     for (const auto& photo : photos) {
         if (photo->selected) {
-            selected.append(photo);
+            selected.append(QVariant::fromValue(photo));
         }
     }
+    qDebug() << "Returning" << selected.size() << "selected photos";
     return selected;
+}
+
+QVariant PhotosModel::getCamera() const {
+    if (!cameraModel || cameraIndex < 0) {
+        return QVariant();
+    }
+    return QVariant::fromValue(cameraModel->getCameraAt(cameraIndex));
 }
 
 void PhotosModel::loadThumbnail(int index) {
