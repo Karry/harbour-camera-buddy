@@ -57,8 +57,6 @@ class PhotosModel: public QAbstractListModel {
     Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
     Q_PROPERTY(int selectedCount READ getSelectedCount NOTIFY selectedCountChanged)
     Q_PROPERTY(QString cameraName READ getCameraName NOTIFY cameraNameChanged)
-    Q_PROPERTY(int cameraIndex READ getCameraIndex WRITE setCameraIndex NOTIFY cameraIndexChanged)
-    Q_PROPERTY(CameraModel* cameraModel READ getCameraModel WRITE setCameraModel NOTIFY cameraModelChanged)
 
 public slots:
     void refresh();
@@ -73,8 +71,6 @@ signals:
     void countChanged();
     void selectedCountChanged();
     void cameraNameChanged();
-    void cameraIndexChanged();
-    void cameraModelChanged();
     void thumbnailLoaded(int index);
     void error(const QString &message);
 
@@ -111,13 +107,10 @@ public:
     Q_INVOKABLE bool isLoading() const { return loading; }
     Q_INVOKABLE int getSelectedCount() const;
     Q_INVOKABLE QString getCameraName() const { return cameraName; }
-    Q_INVOKABLE int getCameraIndex() const { return cameraIndex; }
-    Q_INVOKABLE void setCameraIndex(int index);
-    Q_INVOKABLE CameraModel* getCameraModel() const { return cameraModel; }
-    Q_INVOKABLE void setCameraModel(CameraModel* model);
     Q_INVOKABLE QSharedPointer<PhotoInfo> getPhotoAt(int index) const;
     Q_INVOKABLE QVariantList getSelectedPhotos() const;
     Q_INVOKABLE QVariant getCamera() const;
+    Q_INVOKABLE void setCamera(const QVariant &cameraVariant);
 
 
 private:
@@ -130,8 +123,7 @@ private:
 
 private:
     QList<QSharedPointer<PhotoInfo>> photos;
-    CameraModel* cameraModel;
-    int cameraIndex;
+    QSharedPointer<CameraDevice> camera;
     QString cameraName;
     bool loading;
     QMutex loadMutex;
