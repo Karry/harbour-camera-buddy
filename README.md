@@ -1,6 +1,6 @@
 # harbour-camera-buddy
 
-![Build Status](https://github.com/YOUR_USERNAME/harbour-camera-buddy/workflows/Build%20Camera%20Buddy/badge.svg)
+[![Last build on Ubuntu 24.04](https://github.com/Karry/harbour-camera-buddy/actions/workflows/build.yml/badge.svg)](https://github.com/Karry/harbour-camera-buddy/actions/workflows/build.yml)
 
 Sailfish OS UI for Gphoto2
 
