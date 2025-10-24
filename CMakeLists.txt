@@ -145,7 +145,6 @@ set(SOURCE_FILES
 # find qml -type f
 set(QML_FILES
     qml/main.qml
-    qml/pages/MainPage.qml
     qml/pages/CamerasPage.qml
     qml/pages/PhotosPage.qml
     qml/pages/DownloadPage.qml
