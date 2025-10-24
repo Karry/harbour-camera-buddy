@@ -6,6 +6,16 @@ Page {
 
     allowedOrientations: Orientation.All
 
+    // Scanning indicator
+    BusyIndicator {
+        id: scanningIndicator
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        running: cameraModel.scanning
+        visible: running
+        size: BusyIndicatorSize.Large
+    }
+
     SilicaFlickable {
         anchors.fill: parent
 
@@ -27,29 +37,11 @@ Page {
                 title: qsTr("Connected Cameras")
             }
 
-            // Scanning indicator
-            BusyIndicator {
-                id: scanningIndicator
-                anchors.horizontalCenter: parent.horizontalCenter
-                running: cameraModel.scanning
-                visible: running
-                size: BusyIndicatorSize.Medium
-            }
-
-            Label {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("Scanning for cameras...")
-                visible: cameraModel.scanning
-                color: Theme.secondaryColor
-                font.pixelSize: Theme.fontSizeMedium
-            }
-
             // Camera list
             SilicaListView {
                 id: cameraListView
                 width: parent.width
                 height: contentHeight
-                visible: !cameraModel.scanning
                 model: cameraModel
 
                 delegate: ListItem {
@@ -147,15 +139,6 @@ Page {
                     text: qsTr("No cameras found")
                     hintText: qsTr("Make sure your camera is connected via USB and turned on. Pull down to refresh.")
                 }
-            }
-
-            // Camera count info
-            Label {
-                anchors.horizontalCenter: parent.horizontalCenter
-                text: qsTr("%n camera(s) found", "", cameraModel.count)
-                visible: cameraModel.count > 0 && !cameraModel.scanning
-                color: Theme.secondaryColor
-                font.pixelSize: Theme.fontSizeSmall
             }
         }
     }

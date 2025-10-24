@@ -227,7 +227,7 @@ CameraModel::CameraModel(QObject *parent)
 
     // Set up refresh timer for periodic camera detection
     refreshTimer->setSingleShot(false);
-    refreshTimer->setInterval(5000); // Check every 5 seconds
+    refreshTimer->setInterval(10000); // Check every 10 seconds
     connect(refreshTimer, &QTimer::timeout, this, &CameraModel::onRefreshTimer);
 
     // Initial scan
@@ -284,11 +284,26 @@ void CameraModel::refresh() {
     scanning = true;
     emit scanningChanged();
 
-    qDebug() << "Scanning for cameras...";
-    scanForCameras();
+    qDebug() << "Starting camera scan in background thread...";
 
-    scanning = false;
-    emit scanningChanged();
+    // Run scanning in background thread to avoid blocking UI
+    class ScanCamerasRunnable : public QRunnable {
+    private:
+        CameraModel* model;
+    public:
+        ScanCamerasRunnable(CameraModel* m) : model(m) { setAutoDelete(true); }
+        void run() override {
+            model->scanForCameras();
+
+            // Update scanning state on main thread
+            QTimer::singleShot(0, model, [this]() {
+                model->scanning = false;
+                emit model->scanningChanged();
+            });
+        }
+    };
+
+    QThreadPool::globalInstance()->start(new ScanCamerasRunnable(this));
 }
 
 void CameraModel::onRefreshTimer() {
@@ -298,75 +313,77 @@ void CameraModel::onRefreshTimer() {
     }
 }
 
-void CameraModel::scanForCameras() {
-    QMutexLocker locker(&scanMutex);
-
-    if (!gphoto2Initialized) {
-        emit error("GPhoto2 not initialized");
-        return;
-    }
-
-    // First, detect available cameras without initializing them
-    QList<QSharedPointer<CameraDevice>> detectedCameras = detectGPhoto2Cameras();
-
+void CameraModel::appendNewCameras(const QList<QSharedPointer<CameraDevice>> &detectedCameras) {
     // Compare with existing cameras and update the model
-    bool changed = false;
     QList<QSharedPointer<CameraDevice>> newCameras;
 
     // Check each detected camera
     for (const auto &detected : detectedCameras) {
-        QSharedPointer<CameraDevice> existingCamera;
+        bool existingCamera = false;
 
         // Look for this camera in our existing list
         for (const auto &existing : cameras) {
             if (existing->model == detected->model && existing->port == detected->port) {
-                existingCamera = existing;
+                existingCamera = true;
                 break;
             }
         }
 
         if (existingCamera) {
             // Camera already exists, keep the existing one (preserves connection state)
-            newCameras.append(existingCamera);
-            qDebug() << "Keeping existing camera:" << existingCamera->toString() << "connected:" << existingCamera->connected;
+            qDebug() << "Keeping existing camera:" << detected->toString() << "connected:" << detected->connected;
+            continue;
+        }
+
+        // New camera detected, try to initialize it
+        qDebug() << "New camera detected, attempting to initialize:" << detected->toString();
+        if (detected->initialize()) {
+            qDebug() << "Successfully initialized new camera:" << detected->toString();
         } else {
-            // New camera detected, try to initialize it
-            qDebug() << "New camera detected, attempting to initialize:" << detected->toString();
-            if (detected->initialize()) {
-                qDebug() << "Successfully initialized new camera:" << detected->toString();
-            } else {
-                qWarning() << "Failed to initialize new camera:" << detected->toString();
-                detected->connected = false;
-            }
-            newCameras.append(detected);
-            changed = true;
+            qWarning() << "Failed to initialize new camera:" << detected->toString();
+            detected->connected = false;
         }
+        newCameras.append(detected);
     }
 
-    // Check if any existing cameras were removed
-    if (newCameras.size() != cameras.size()) {
-        changed = true;
-    }
-
-    if (changed) {
+    if (!newCameras.isEmpty()) {
         beginResetModel();
+        cameras << newCameras;
+        endResetModel();
 
-        // Cleanup cameras that are no longer detected
-        for (auto &camera : cameras) {
-            bool found = false;
-            for (const auto &newCamera : newCameras) {
-                if (camera->model == newCamera->model && camera->port == newCamera->port) {
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                qDebug() << "Cleaning up removed camera:" << camera->toString();
-                camera->cleanup();
+        emit countChanged();
+        qDebug() << "Found" << newCameras.size() << "new cameras, total now:" << cameras.size();
+        for (const auto &camera : cameras) {
+            qDebug() << "  " << camera->toString() << "connected:" << camera->connected;
+        }
+    } else {
+        qDebug() << "No camera changes detected";
+    }
+}
+
+void CameraModel::cleanupRemoved(const QList<QSharedPointer<CameraDevice>> &allDetectedCameras) {
+    // Check if any existing cameras were removed
+    // Cleanup cameras that are no longer detected
+    QList<QSharedPointer<CameraDevice>> keptCameras;
+    for (auto &camera : cameras) {
+        bool found = false;
+        for (const auto &newCamera : allDetectedCameras) {
+            if (camera->model == newCamera->model && camera->port == newCamera->port) {
+                found = true;
+                break;
             }
         }
+        if (!found) {
+            qDebug() << "Cleaning up removed camera:" << camera->toString();
+            camera->cleanup();
+        } else {
+            keptCameras << camera;
+        }
+    }
 
-        cameras = newCameras;
+    if (cameras.size() != keptCameras.size()) {
+        beginResetModel();
+        cameras = keptCameras;
         endResetModel();
 
         emit countChanged();
@@ -378,6 +395,34 @@ void CameraModel::scanForCameras() {
     } else {
         qDebug() << "No camera changes detected";
     }
+}
+
+void CameraModel::scanForCameras() {
+    QMutexLocker locker(&scanMutex);
+
+    if (!gphoto2Initialized) {
+        emit error("GPhoto2 not initialized");
+        return;
+    }
+
+    // Detect USB cameras
+    QList<QSharedPointer<CameraDevice>> detectedUsbCameras = detectGPhoto2Cameras();
+    qDebug() << "Total detected USB cameras:" << detectedUsbCameras.size();
+
+    // Update model on main thread (MUST run on main thread)
+    QTimer::singleShot(0, this, [this, detectedUsbCameras]() {
+        appendNewCameras(detectedUsbCameras);
+    });
+
+    // Detect PTP/IP cameras on network
+    QList<QSharedPointer<CameraDevice>> detectedIpCameras = detectGPhoto2IPCameras();
+    qDebug() << "Total detected IP cameras:" << detectedIpCameras.size();
+
+    // Update model on main thread (MUST run on main thread)
+    QTimer::singleShot(0, this, [this, detectedIpCameras, detectedUsbCameras]() {
+        appendNewCameras(detectedIpCameras);
+        cleanupRemoved(detectedUsbCameras + detectedIpCameras);
+    });
 }
 
 QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2Cameras() {
@@ -434,6 +479,140 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2Cameras() {
     }
 
     gp_list_free(cameraList);
+    return result;
+}
+
+QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
+    QList<QSharedPointer<CameraDevice>> result;
+
+    if (!globalContext) {
+        qWarning() << "Global context not available for IP camera detection";
+        return result;
+    }
+
+    qDebug() << "Scanning for PTP/IP cameras on network...";
+
+    // Get port info list
+    GPPortInfoList *portInfoList = nullptr;
+    int ret = gp_port_info_list_new(&portInfoList);
+    if (ret < GP_OK) {
+        qWarning() << "Failed to create port info list:" << gp_result_as_string(ret);
+        return result;
+    }
+
+    ret = gp_port_info_list_load(portInfoList);
+    if (ret < GP_OK) {
+        qWarning() << "Failed to load port info list:" << gp_result_as_string(ret);
+        gp_port_info_list_free(portInfoList);
+        return result;
+    }
+
+    // Get camera abilities list
+    CameraAbilitiesList *abilitiesList = nullptr;
+    ret = gp_abilities_list_new(&abilitiesList);
+    if (ret < GP_OK) {
+        qWarning() << "Failed to create abilities list:" << gp_result_as_string(ret);
+        gp_port_info_list_free(portInfoList);
+        return result;
+    }
+
+    ret = gp_abilities_list_load(abilitiesList, globalContext);
+    if (ret < GP_OK) {
+        qWarning() << "Failed to load abilities list:" << gp_result_as_string(ret);
+        gp_abilities_list_free(abilitiesList);
+        gp_port_info_list_free(portInfoList);
+        return result;
+    }
+
+    // Scan through all port info entries looking for PTP/IP ports
+    int portCount = gp_port_info_list_count(portInfoList);
+    qDebug() << "Found" << portCount << "total ports in system";
+
+    for (int i = 0; i < portCount; i++) {
+        GPPortInfo portInfo;
+        ret = gp_port_info_list_get_info(portInfoList, i, &portInfo);
+        if (ret < GP_OK) {
+            continue;
+        }
+
+        char *portName = nullptr;
+        ret = gp_port_info_get_name(portInfo, &portName);
+        if (ret < GP_OK || !portName) {
+            continue;
+        }
+
+        QString portNameStr = QString::fromUtf8(portName);
+
+        // Check if this is a PTP/IP port
+        if (!portNameStr.startsWith("ptpip:", Qt::CaseInsensitive)) {
+            continue;
+        }
+
+        qDebug() << "Found PTP/IP port:" << portNameStr;
+
+        // Try all camera models that support PTP/IP
+        int modelCount = gp_abilities_list_count(abilitiesList);
+        for (int j = 0; j < modelCount; j++) {
+            CameraAbilities abilities;
+            ret = gp_abilities_list_get_abilities(abilitiesList, j, &abilities);
+            if (ret < GP_OK) {
+                continue;
+            }
+
+            // Check if this camera model supports PTP/IP
+            if (abilities.port & GP_PORT_PTPIP) {
+                Camera *testCamera = nullptr;
+                ret = gp_camera_new(&testCamera);
+                if (ret < GP_OK) {
+                    continue;
+                }
+
+                // Set camera abilities
+                ret = gp_camera_set_abilities(testCamera, abilities);
+                if (ret < GP_OK) {
+                    gp_camera_unref(testCamera);
+                    continue;
+                }
+
+                // Set port info
+                ret = gp_camera_set_port_info(testCamera, portInfo);
+                if (ret < GP_OK) {
+                    gp_camera_unref(testCamera);
+                    continue;
+                }
+
+                // Try to initialize the camera
+                ret = gp_camera_init(testCamera, globalContext);
+                if (ret == GP_OK) {
+                    // Successfully found a camera on this port
+                    auto camera = QSharedPointer<CameraDevice>::create();
+                    camera->model = QString::fromUtf8(abilities.model);
+                    camera->port = portNameStr;
+                    camera->name = QString("%1 (%2)").arg(camera->model, camera->port);
+                    camera->context = globalContext;
+                    camera->connected = false; // Will be set to true after full initialization
+
+                    qDebug() << "Detected IP camera:" << camera->model << "on port:" << camera->port;
+
+                    result.append(camera);
+
+                    // Exit the camera, we'll reinitialize later
+                    gp_camera_exit(testCamera, globalContext);
+                    gp_camera_unref(testCamera);
+
+                    // Found a working camera on this port, no need to try other models
+                    break;
+                } else {
+                    gp_camera_unref(testCamera);
+                }
+            }
+        }
+    }
+
+    gp_abilities_list_free(abilitiesList);
+    gp_port_info_list_free(portInfoList);
+
+    qDebug() << "PTP/IP camera scan complete, found" << result.size() << "cameras";
     return result;
 }
 

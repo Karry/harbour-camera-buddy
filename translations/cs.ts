@@ -4,74 +4,62 @@
 <context>
     <name>CamerasPage</name>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="14"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="24"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="27"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="37"/>
         <source>Connected Cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="41"/>
-        <source>Scanning for cameras...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="75"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="138"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="67"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="130"/>
         <source>Unknown Camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="83"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="75"/>
         <source>Model: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="83"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="92"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="101"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="75"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="84"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="93"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="92"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="84"/>
         <source>Port: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="101"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="93"/>
         <source>Serial: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="119"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="111"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="119"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="111"/>
         <source>Disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="147"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="139"/>
         <source>No cameras found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="148"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="140"/>
         <source>Make sure your camera is connected via USB and turned on. Pull down to refresh.</source>
         <translation type="unfinished"></translation>
-    </message>
-    <message numerus="yes">
-        <location filename="../qml/pages/CamerasPage.qml" line="155"/>
-        <source>%n camera(s) found</source>
-        <translation type="unfinished">
-            <numerusform></numerusform>
-        </translation>
     </message>
 </context>
 <context>
