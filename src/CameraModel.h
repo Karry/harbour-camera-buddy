@@ -110,7 +110,7 @@ private:
     void appendNewCameras(const QList<QSharedPointer<CameraDevice>> &detectedCameras);
     void cleanupRemoved(const QList<QSharedPointer<CameraDevice>> &allDetectedCameras);
     QList<QSharedPointer<CameraDevice>> detectGPhoto2Cameras();
-    QList<QSharedPointer<CameraDevice>> detectGPhoto2IPCameras();
+    QList<QSharedPointer<CameraDevice>> detectGPhoto2IPCamera(const QString &cameraPort);
     void initializeGPhoto2();
     void cleanupGPhoto2();
 

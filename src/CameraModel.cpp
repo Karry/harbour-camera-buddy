@@ -337,13 +337,17 @@ void CameraModel::appendNewCameras(const QList<QSharedPointer<CameraDevice>> &de
             continue;
         }
 
-        // New camera detected, try to initialize it
-        qDebug() << "New camera detected, attempting to initialize:" << detected->toString();
-        if (detected->initialize()) {
-            qDebug() << "Successfully initialized new camera:" << detected->toString();
+        if (detected->connected) {
+            qDebug() << "Camera already connected, skipping initialization:" << detected->toString();
         } else {
-            qWarning() << "Failed to initialize new camera:" << detected->toString();
-            detected->connected = false;
+            // New camera detected, try to initialize it
+            qDebug() << "New camera detected, attempting to initialize:" << detected->toString();
+            if (detected->initialize()) {
+                qDebug() << "Successfully initialized new camera:" << detected->toString();
+            } else {
+                qWarning() << "Failed to initialize new camera:" << detected->toString();
+                detected->connected = false;
+            }
         }
         newCameras.append(detected);
     }
@@ -416,14 +420,41 @@ void CameraModel::scanForCameras() {
         appendNewCameras(detectedUsbCameras);
     });
 
-    // Detect PTP/IP cameras on network
-    QList<QSharedPointer<CameraDevice>> detectedIpCameras = detectGPhoto2IPCameras();
-    qDebug() << "Total detected IP cameras:" << detectedIpCameras.size();
+    auto allDetectedCameras = detectedUsbCameras;
 
-    // Update model on main thread (MUST run on main thread)
-    QTimer::singleShot(0, this, [this, detectedIpCameras, detectedUsbCameras]() {
-        appendNewCameras(detectedIpCameras);
-        cleanupRemoved(detectedUsbCameras + detectedIpCameras);
+    // Detect PTP/IP cameras on network
+    QString ipAddress = settings ? settings->ptpIpAddress() : "192.168.1.1";
+    if (ipAddress.isEmpty()) {
+        qDebug() << "PTP/IP address not configured in settings, skipping IP camera detection";
+    } else {
+        // it seems that Nikon camera does not support multiple PTP/IP connections
+        // so we avoid detecting multiple times the same camera
+        const QString cameraPort = QString("ptpip:%1").arg(ipAddress);
+        QSharedPointer<CameraDevice> alreadyDetected;
+        for (auto &camera : cameras) {
+            if (camera->port == cameraPort) {
+                alreadyDetected = camera;
+                break;
+            }
+        }
+        if (alreadyDetected) {
+            qDebug() << "PTP/IP camera detected already, skipping detection for port:" << cameraPort;
+            allDetectedCameras << alreadyDetected;
+        } else {
+            QList<QSharedPointer<CameraDevice>> detectedIpCameras = detectGPhoto2IPCamera(cameraPort);
+            qDebug() << "Total detected IP cameras:" << detectedIpCameras.size();
+
+            // Update model on main thread (MUST run on main thread)
+            QTimer::singleShot(0, this, [this, detectedIpCameras]() {
+                appendNewCameras(detectedIpCameras);
+            });
+            allDetectedCameras << detectedIpCameras;
+        }
+    }
+
+    // Cleanup model on main thread (MUST run on main thread)
+    QTimer::singleShot(0, this, [this, allDetectedCameras]() {
+        cleanupRemoved(allDetectedCameras);
     });
 }
 
@@ -484,7 +515,7 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2Cameras() {
     return result;
 }
 
-QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
+QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCamera(const QString &cameraPort) {
     QList<QSharedPointer<CameraDevice>> result;
 
     if (!globalContext) {
@@ -509,34 +540,8 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
         return result;
     }
 
-    // Get camera abilities list
-    CameraAbilitiesList *abilitiesList = nullptr;
-    ret = gp_abilities_list_new(&abilitiesList);
-    if (ret < GP_OK) {
-        qWarning() << "Failed to create abilities list:" << gp_result_as_string(ret);
-        gp_port_info_list_free(portInfoList);
-        return result;
-    }
-
-    ret = gp_abilities_list_load(abilitiesList, globalContext);
-    if (ret < GP_OK) {
-        qWarning() << "Failed to load abilities list:" << gp_result_as_string(ret);
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        return result;
-    }
-    QString ipAddress = settings ? settings->ptpIpAddress() : "192.168.1.1";
-    if (ipAddress.isEmpty()) {
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        qDebug() << "PTP/IP address not configured in settings, skipping IP camera detection";
-        return result;
-    }
-
-    const QString portNameConfig = QString("ptpip:%1").arg(ipAddress);
-    int portIndex = gp_port_info_list_lookup_path(portInfoList, portNameConfig.toUtf8().constData());
+    int portIndex = gp_port_info_list_lookup_path(portInfoList, cameraPort.toUtf8().constData());
     if (portIndex == GP_ERROR_UNKNOWN_PORT) {
-        gp_abilities_list_free(abilitiesList);
         gp_port_info_list_free(portInfoList);
         qWarning() << "Failed to prepare custom PTP/IP port";
         return result;
@@ -545,7 +550,6 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
     GPPortInfo portInfo;
     ret = gp_port_info_list_get_info(portInfoList, portIndex, &portInfo);
     if (ret < GP_OK) {
-        gp_abilities_list_free(abilitiesList);
         gp_port_info_list_free(portInfoList);
         qWarning() << "Failed to get port info";
         return result;
@@ -554,7 +558,6 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
     char *portName = nullptr;
     ret = gp_port_info_get_name(portInfo, &portName);
     if (ret < GP_OK || !portName) {
-        gp_abilities_list_free(abilitiesList);
         gp_port_info_list_free(portInfoList);
         qWarning() << "Failed to get port name";
         return result;
@@ -565,88 +568,35 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
     char *portPath = nullptr;
     ret = gp_port_info_get_path(portInfo, &portPath);
     if (ret < GP_OK || !portPath) {
-        gp_abilities_list_free(abilitiesList);
         gp_port_info_list_free(portInfoList);
         qWarning() << "Failed to get port path";
         return result;
     }
 
     QString portPathStr = QString::fromUtf8(portPath);
+    if (portPathStr!=cameraPort) {
+        qWarning() << "Port path mismatch, expected:" << cameraPort << "got:" << portPathStr;
+    }
 
     qDebug() << "Found PTP/IP port:" << portNameStr << "path:" << portPathStr;
 
-    Camera *testCamera = nullptr;
-    ret = gp_camera_new(&testCamera);
-    if (ret < GP_OK) {
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        qWarning() << "Failed create camera";
-        return result;
-    }
-
-    ret = gp_camera_set_port_info(testCamera, portInfo);
-    if (ret < GP_OK) {
-        gp_camera_unref(testCamera);
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        qWarning() << "Failed to setup port info";
-        return result;
-    }
-
-    int m = gp_abilities_list_lookup_model(abilitiesList, "PTP/IP Camera");
-    if (m < 0) {
-        gp_camera_unref(testCamera);
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        qWarning() << "Failed to find PTP/IP camera model in abilities list";
-        return result;
-    }
-
-    CameraAbilities abilities;
-    ret = gp_abilities_list_get_abilities(abilitiesList, m, &abilities);
-    if (ret < GP_OK) {
-        gp_camera_unref(testCamera);
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        qWarning() << "Failed to get PTP/IP camera abilities";
-        return result;
-    }
-
-    ret = gp_camera_set_abilities(testCamera, abilities);
-    if (ret < GP_OK) {
-        gp_camera_unref(testCamera);
-        gp_abilities_list_free(abilitiesList);
-        gp_port_info_list_free(portInfoList);
-        qWarning() << "Failed to set PTP/IP camera abilities";
-        return result;
-    }
+    auto camera = QSharedPointer<CameraDevice>::create();
+    camera->model = "PTP/IP Camera";
+    camera->port = portPathStr;
+    camera->name = portNameStr;
+    camera->context = globalContext;
+    camera->connected = false; // Will be set to true after full initialization
 
     // Try to initialize the camera
-    ret = gp_camera_init(testCamera, globalContext);
-    if (ret == GP_OK) {
+    if (camera->initialize()) {
         // Successfully found a camera on this port
-        auto camera = QSharedPointer<CameraDevice>::create();
-        camera->model = QString::fromUtf8(abilities.model);
-        camera->port = portNameStr;
-        camera->name = portPathStr;
-        camera->context = globalContext;
-        camera->connected = false; // Will be set to true after full initialization
-
         qDebug() << "Detected IP camera:" << camera->model << "on port:" << camera->port;
-
         result.append(camera);
-
-        // Exit the camera, we'll reinitialize later
-        gp_camera_exit(testCamera, globalContext);
-        gp_camera_unref(testCamera);
-
         // Found a working camera on this port
     } else {
         qWarning() << "Failed to create camera:" << gp_result_as_string(ret);
-        gp_camera_unref(testCamera);
     }
 
-    gp_abilities_list_free(abilitiesList);
     gp_port_info_list_free(portInfoList);
 
     qDebug() << "PTP/IP camera scan complete, found" << result.size() << "cameras";
