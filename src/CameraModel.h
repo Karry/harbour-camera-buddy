@@ -35,8 +35,8 @@ struct CameraDevice {
     QString model;
     QString port;
     QString serialNumber;
-    bool connected;
-    bool busy;
+    std::atomic_bool connected;
+    std::atomic_bool busy;
     Camera* camera;
     GPContext* context;
     QThreadPool* threadPool;

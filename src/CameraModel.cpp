@@ -382,6 +382,9 @@ void CameraModel::cleanupRemoved(const QList<QSharedPointer<CameraDevice>> &allD
         if (!found) {
             qDebug() << "Cleaning up removed camera:" << camera->toString();
             camera->cleanup();
+        } else if (!camera->connected) {
+            qDebug() << "Cleaning up disconnected camera:" << camera->toString();
+            camera->cleanup();
         } else {
             keptCameras << camera;
         }
@@ -401,6 +404,41 @@ void CameraModel::cleanupRemoved(const QList<QSharedPointer<CameraDevice>> &allD
     } else {
         qDebug() << "No camera changes detected";
     }
+
+    // ping all cameras to detect disconnections and keep-alive PTP/IP cameras
+    // Create a runnable to execute keep-alive in camera's thread pool
+    class KeepAliveRunnable : public QRunnable {
+    private:
+        QSharedPointer<CameraDevice> camera;
+    public:
+        KeepAliveRunnable(QSharedPointer<CameraDevice> camera)
+            : camera(camera) {
+            setAutoDelete(true);
+        }
+
+        void run() override {
+            if (!camera || !camera->isValid()) {
+                return;
+            }
+
+            // Simple operation to keep connection alive - get camera summary
+            CameraText summary;
+            int ret = gp_camera_get_summary(camera->camera, &summary, camera->context);
+            if (ret == GP_OK) {
+                qDebug() << "Keep-alive sent successfully for camera:" << camera->toString();
+            } else {
+                qWarning() << "Keep-alive failed for camera:" << camera->toString() << "error:" << gp_result_as_string(ret);
+                camera->connected = false;
+            }
+        }
+    };
+
+    for (auto &camera: cameras) {
+        if (camera->isValid() && camera->threadPool){
+            camera->threadPool->start(new KeepAliveRunnable(camera));
+        }
+    }
+
 }
 
 void CameraModel::scanForCameras() {
@@ -625,9 +663,9 @@ QVariant CameraModel::data(const QModelIndex &index, int role) const {
         case SerialNumberRole:
             return camera->serialNumber;
         case ConnectedRole:
-            return camera->connected;
+            return bool(camera->connected);
         case BusyRole:
-            return camera->busy;
+            return bool(camera->busy);
         case CameraObjectRole:
             return QVariant::fromValue(camera);
         default:
@@ -678,7 +716,7 @@ bool CameraModel::isCameraConnected(int index) const {
     return cameras[index]->connected;
 }
 
-void CameraModel::setSettings(Settings *settings) {
-    settings = settings;
+void CameraModel::setSettings(Settings *settingsPtr) {
+    this->settings = settingsPtr;
 }
 
