@@ -8,7 +8,7 @@ via USB or WiFi using the GPhoto2 library. It allows you to browse and download 
 ## Disclaimer
 
 This application was vibe-coded using GitHub Copilot AI assistant based on provided instructions and my manual corrections.
-It was may experiment howto recent AI tools can handle C++/QML development for minor platform like SailfishOS.
+It was my experiment howto recent AI tools can handle C++/QML development for minor platform like SailfishOS.
 Code is ugly and ~probably~ DEFINITELY contains bugs, but at least it compiles and basic functionality works.
 It may explode! You have been warned.
 
