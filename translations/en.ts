@@ -58,7 +58,7 @@
     </message>
     <message>
         <location filename="../qml/pages/CamerasPage.qml" line="140"/>
-        <source>Make sure your camera is connected via USB and turned on. Pull down to refresh.</source>
+        <source>Make sure your camera is turned on and connected via USB or via WiFi. Pull down to refresh or add PTP/IP camera manually.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
