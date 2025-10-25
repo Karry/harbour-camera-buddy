@@ -112,6 +112,5 @@ sha1sum    %{buildroot}%{_bindir}/%{name}
 %changelog
 * Wed Oct 22 2025 Lukas Karas <lukas.karas@centrum.cz> - 0.1.0-1
 - Initial release
-- GPhoto2 camera control support
-- Basic UI for camera detection and control
-- USB camera connection support
+- USB and WiFi (PTP/IP) camera support, using GPhoto library, see https://gphoto.sourceforge.io/proj/libgphoto2/support.php
+- Detect connected cameras, image transfer
