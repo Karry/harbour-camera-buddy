@@ -137,7 +137,7 @@ Page {
                 ViewPlaceholder {
                     enabled: cameraListView.count === 0 && !cameraModel.scanning
                     text: qsTr("No cameras found")
-                    hintText: qsTr("Make sure your camera is connected via USB and turned on. Pull down to refresh.")
+                    hintText: qsTr("Make sure your camera is turned on and connected via USB or via WiFi. Pull down to refresh or add PTP/IP camera manually.")
                 }
             }
         }
