@@ -132,12 +132,14 @@ set(HEADER_FILES
     src/CameraBuddy.h
     src/CameraModel.h
     src/PhotosModel.h
+    src/Settings.h
 )
 
 set(SOURCE_FILES
     src/CameraBuddy.cpp
     src/PhotosModel.cpp
     src/CameraModel.cpp
+    src/Settings.cpp
     src/DownloadModel.cpp
 )
 
@@ -147,6 +149,7 @@ set(QML_FILES
     qml/main.qml
     qml/pages/CamerasPage.qml
     qml/pages/PhotosPage.qml
+    qml/pages/SettingsPage.qml
     qml/pages/DownloadPage.qml
     qml/pages/Cover.qml
 )
