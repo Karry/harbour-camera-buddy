@@ -85,11 +85,32 @@ void CameraBuddy::setApp(QGuiApplication* app)
     m_app = app;
 }
 
+/**
+ * \brief Logging function hook
+ *
+ * This is the function frontends can use to receive logging information
+ * from the libgphoto2 framework. It is set using gp_log_add_func() and
+ * removed using gp_log_remove_func() and will then receive the logging
+ * messages of the level specified.
+ *
+ * \param level the log level of the passed message, as set by the camera driver or libgphoto2
+ * \param domain the logging domain as set by the camera driver, or libgphoto2 function
+ * \param str the logmessage, without linefeed
+ * \param data the caller private data that was passed to gp_log_add_func()
+ */
+void gp_log(GPLogLevel level, const char *domain, const char *str, [[maybe_unused]] void *data) {
+    if (level == GP_LOG_ERROR) {
+        qWarning() << "GPhoto2 ERROR:" << QString::fromUtf8(domain) << ":" << QString::fromUtf8(str);
+    } else if (level == GP_LOG_DEBUG || level == GP_LOG_VERBOSE) {
+        qDebug() << "GPhoto2 DEBUG:" << QString::fromUtf8(domain) << ":" << QString::fromUtf8(str);
+    }
+}
+
 void CameraBuddy::initializeGPhoto2()
 {
     // Initialize GPhoto2 library
-    gp_log_add_func(GP_LOG_ERROR, nullptr, nullptr);
-    gp_log_add_func(GP_LOG_DEBUG, nullptr, nullptr);
+    gp_log_add_func(GP_LOG_ERROR, gp_log, nullptr);
+    gp_log_add_func(GP_LOG_DEBUG, gp_log, nullptr);
 }
 
 void CameraBuddy::setupTranslations()
