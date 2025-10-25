@@ -22,6 +22,7 @@
 #include <CameraModel.h>
 #include <PhotosModel.h>
 #include <DownloadModel.h>
+#include <Settings.h>
 
 // SFOS
 #include <sailfishapp/sailfishapp.h>
@@ -173,12 +174,17 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     qmlRegisterType<CameraModel>("harbour.camera.buddy", 1, 0, "CameraModel");
     qmlRegisterType<DownloadModel>("harbour.camera.buddy", 1, 0, "DownloadModel");
 
+    // Create settings instance
+    Settings settings;
+
     // Create camera model instance (singleton)
     CameraModel cameraModel;
+    cameraModel.setSettings(&settings);
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
     view->rootContext()->setContextProperty("cameraModel", &cameraModel);
     view->rootContext()->setContextProperty("cameraBuddy", &cameraBuddy);
+    view->rootContext()->setContextProperty("settings", &settings);
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
     view->show();
 

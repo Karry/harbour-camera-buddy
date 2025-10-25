@@ -28,6 +28,8 @@
 
 #include <gphoto2/gphoto2.h>
 
+class Settings;
+
 struct CameraDevice {
     QString name;
     QString model;
@@ -95,6 +97,8 @@ public:
     Q_INVOKABLE bool isScanning() const { return scanning; }
     Q_INVOKABLE QSharedPointer<CameraDevice> getCameraAt(int index) const;
     Q_INVOKABLE QString getCameraName(int index) const;
+    void setSettings(Settings *settings);
+
     Q_INVOKABLE bool isCameraConnected(int index) const;
 
 private:
@@ -117,4 +121,5 @@ private:
     bool gphoto2Initialized;
     QMutex scanMutex;
     GPContext* globalContext;
+    Settings* settings;
 };

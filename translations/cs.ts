@@ -9,55 +9,60 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="37"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="28"/>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/CamerasPage.qml" line="41"/>
         <source>Connected Cameras</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="67"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="130"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="71"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="134"/>
         <source>Unknown Camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="75"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="79"/>
         <source>Model: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="75"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="84"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="93"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="79"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="88"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="97"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="84"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="88"/>
         <source>Port: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="93"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="97"/>
         <source>Serial: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="111"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="115"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="111"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="115"/>
         <source>Disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="139"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="143"/>
         <source>No cameras found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="140"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="144"/>
         <source>Make sure your camera is turned on and connected via USB or via WiFi. Pull down to refresh or add PTP/IP camera manually.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -168,6 +173,44 @@ Buddy</source>
     <message>
         <location filename="../src/PhotosModel.cpp" line="224"/>
         <source>Camera not available or not connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SettingsPage</name>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="24"/>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="25"/>
+        <source>Save</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="26"/>
+        <source>Cancel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="30"/>
+        <source>PTP/IP Camera</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="36"/>
+        <source>IP Address</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="37"/>
+        <source>Enter IP address (e.g., 192.168.1.1)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/SettingsPage.qml" line="52"/>
+        <source>Enter the IP address of your PTP/IP compatible camera. The camera will be detected automatically after you accept the settings.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

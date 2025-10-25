@@ -18,6 +18,7 @@
 */
 
 #include "CameraModel.h"
+#include "Settings.h"
 
 #include <QDebug>
 #include <QThread>
@@ -222,6 +223,7 @@ CameraModel::CameraModel(QObject *parent)
     , scanning(false)
     , gphoto2Initialized(false)
     , globalContext(nullptr)
+    , settings(nullptr)
 {
     initializeGPhoto2();
 
@@ -523,9 +525,15 @@ QList<QSharedPointer<CameraDevice>> CameraModel::detectGPhoto2IPCameras() {
         gp_port_info_list_free(portInfoList);
         return result;
     }
+    QString ipAddress = settings ? settings->ptpIpAddress() : "192.168.1.1";
+    if (ipAddress.isEmpty()) {
+        gp_abilities_list_free(abilitiesList);
+        gp_port_info_list_free(portInfoList);
+        qDebug() << "PTP/IP address not configured in settings, skipping IP camera detection";
+        return result;
+    }
 
-    // Lookup or append port from settings
-    const QString portNameConfig = QString("ptpip:%1").arg("192.168.1.1"); // TODO: use from settings
+    const QString portNameConfig = QString("ptpip:%1").arg(ipAddress);
     int portIndex = gp_port_info_list_lookup_path(portInfoList, portNameConfig.toUtf8().constData());
     if (portIndex == GP_ERROR_UNKNOWN_PORT) {
         gp_abilities_list_free(abilitiesList);
@@ -719,3 +727,8 @@ bool CameraModel::isCameraConnected(int index) const {
     }
     return cameras[index]->connected;
 }
+
+void CameraModel::setSettings(Settings *settings) {
+    settings = settings;
+}
+
