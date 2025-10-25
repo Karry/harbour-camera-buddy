@@ -20,16 +20,9 @@
 #pragma once
 
 #include <QObject>
-#include <QAbstractListModel>
-#include <QTimer>
-#include <QSharedPointer>
-#include <QMutex>
-#include <QRunnable>
 
-#include "PhotosModel.h"
-#include "CameraModel.h"
-
-#include <gphoto2/gphoto2.h>
+#include <PhotosModel.h>
+#include <CameraModel.h>
 
 enum DownloadStatus {
     Pending = 0,

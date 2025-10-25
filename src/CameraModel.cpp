@@ -38,6 +38,10 @@ QString CameraDevice::toString() const {
 }
 
 bool CameraDevice::initialize() {
+    // WARNING: this function is called from various threads
+    // from UI thread for USB cameras and default Qt thread-pool for PTP/IP cameras
+    // but camera should be access from single thread only (we use single-threaded pool per camera for that)
+    // TODO: fix it somehow, it may explode
     if (camera || !context) {
         return false;
     }

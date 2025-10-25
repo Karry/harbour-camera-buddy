@@ -32,10 +32,8 @@
 #include <QQmlApplicationEngine>
 #include <QQuickView>
 #include <QQmlContext>
-#include <QQmlEngine>
 #include <QtCore/QtGlobal>
 #include <QSettings>
-#include <QTextStream>
 #include <QTranslator>
 #include <QLocale>
 #include <QDebug>
@@ -43,6 +41,7 @@
 // GPhoto2 includes
 #include <gphoto2/gphoto2.h>
 
+// C++ includes
 #include <iostream>
 #include <locale>
 #include <sstream>

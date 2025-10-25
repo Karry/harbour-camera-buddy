@@ -17,13 +17,14 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include "PhotosModel.h"
+#include <PhotosModel.h>
+
 #include <QDebug>
-#include <QThread>
 #include <QMutexLocker>
-#include <QStandardPaths>
-#include <QThreadPool>
 #include <QRunnable>
+#include <QStandardPaths>
+#include <QThread>
+#include <QThreadPool>
 
 QString PhotoInfo::toString() const {
     return QString("%1/%2 (%3, %4)")

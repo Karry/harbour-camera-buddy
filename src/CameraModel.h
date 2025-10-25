@@ -28,6 +28,8 @@
 
 #include <gphoto2/gphoto2.h>
 
+#include <atomic>
+
 class Settings;
 
 struct CameraDevice {

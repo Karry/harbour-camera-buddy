@@ -199,7 +199,7 @@ Buddy</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/PhotosModel.cpp" line="224"/>
+        <location filename="../src/PhotosModel.cpp" line="225"/>
         <source>Camera not available or not connected</source>
         <translation type="unfinished"></translation>
     </message>

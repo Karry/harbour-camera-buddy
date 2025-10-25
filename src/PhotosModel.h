@@ -19,15 +19,11 @@
 
 #pragma once
 
-#include <QObject>
-#include <QAbstractListModel>
-#include <QSharedPointer>
+#include <CameraModel.h>
+
 #include <QDateTime>
 #include <QSize>
-#include <QMutex>
-#include <QTimer>
 
-#include "CameraModel.h"
 #include <gphoto2/gphoto2.h>
 
 struct PhotoInfo {
