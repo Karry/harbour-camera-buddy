@@ -39,18 +39,17 @@ BuildRequires:  libtool
 BuildRequires:  gettext-devel
 
 %description
-Camera Buddy is a Sailfish OS application for controlling external cameras via USB.
-It provides remote camera control, image transfer, and camera settings management
-using the GPhoto2 library. The application allows photographers to remotely control
-their cameras, transfer images, and manage camera settings directly from their
-Sailfish OS device.
+Camera Buddy is a SailfishOS application that provides a user-friendly
+interface for connecting to external DSLR cameras via USB or WiFi
+using the GPhoto2 library. It allows you to browse and download photos
+from connected cameras directly to your SailfishOS device.
 
 Features:
-- Camera detection and connection via USB
-- Remote camera control (shutter, settings)
-- Image preview and transfer
-- Camera settings management
-- Support for multiple camera models via GPhoto2
+- Camera Detection: Automatically detect connected DSLR cameras
+- Photo Browsing: View photos stored on your camera
+- Batch Download: Select and download multiple photos at once
+- Progress Tracking: Monitor download progress in real-time
+- SailfishOS Native: Built specifically for SailfishOS with native UI components
 
 %prep
 %setup -q -n %{name}-%{version}
