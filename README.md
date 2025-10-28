@@ -30,11 +30,6 @@ It may explode! You have been warned.
 - **Progress Tracking**: Monitor download progress in real-time
 - **SailfishOS Native**: Built specifically for SailfishOS with native UI components
 
-## Build Status
-
-The project includes automated builds and testing via GitHub Actions:
-- **Ubuntu 24.04 Build**: Verifies compilation with latest dependencies
-
 ## Dependencies
 
 - GPhoto2 library (for camera communication)
