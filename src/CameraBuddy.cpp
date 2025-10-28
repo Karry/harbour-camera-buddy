@@ -46,6 +46,10 @@
 #include <locale>
 #include <sstream>
 
+#ifdef QT_QML_DEBUG
+#include <QtQuick>
+#endif
+
 #ifndef CAMERA_BUDDY_VERSION_STRING
 static_assert(false, "CAMERA_BUDDY_VERSION_STRING should be defined by build system");
 #endif
@@ -145,6 +149,7 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 
 #ifdef QT_QML_DEBUG
     qWarning() << "Starting QML debugger on port 1234.";
+    qQmlEnableDebuggingHelper.startTcpDebugServer(1234);
 #endif
 
     // Setup C++ locale
