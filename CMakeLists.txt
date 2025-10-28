@@ -164,6 +164,11 @@ target_include_directories(harbour-camera-buddy PRIVATE
     src
 )
 
+# allow exporting main symbol for app booster
+# it avoid sfdk check error:
+# ERROR [/usr/bin/harbour-camera-buddy] Binary must export main() symbol for booster to work (Q_DECL_EXPORT)
+set_target_properties(harbour-camera-buddy PROPERTIES ENABLE_EXPORTS ON)
+
 target_link_libraries(harbour-camera-buddy
     Qt5::Core
     Qt5::DBus
