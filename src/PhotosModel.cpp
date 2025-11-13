@@ -391,38 +391,27 @@ QList<QSharedPointer<PhotoInfo>> PhotosModel::scanFolder(Camera* camera, GPConte
             QString name = QString::fromUtf8(fileName);
             qDebug() << "PhotosModel::scanFolder() - Processing file:" << name;
 
-            // Filter for image files
-            QString lowerName = name.toLower();
-            if (lowerName.endsWith(".jpg") || lowerName.endsWith(".jpeg") ||
-                lowerName.endsWith(".raw") || lowerName.endsWith(".cr2") ||
-                lowerName.endsWith(".nef") || lowerName.endsWith(".arw") ||
-                lowerName.endsWith(".dng") || lowerName.endsWith(".png") ||
-                lowerName.endsWith(".tiff") || lowerName.endsWith(".tif")) {
+            auto photo = QSharedPointer<PhotoInfo>::create();
+            photo->name = name;
+            photo->folder = folder;
+            photo->fullPath = folder + (folder.endsWith("/") ? "" : "/") + name;
 
-                qDebug() << "PhotosModel::scanFolder() - File matches image filter, creating PhotoInfo for:" << name;
-                auto photo = QSharedPointer<PhotoInfo>::create();
-                photo->name = name;
-                photo->folder = folder;
-                photo->fullPath = folder + (folder.endsWith("/") ? "" : "/") + name;
-
-                // Try to get additional info
-                try {
-                    qDebug() << "PhotosModel::scanFolder() - Getting detailed photo info for:" << name;
-                    *photo = getPhotoInfo(camera, context, folder, name);
-                    qDebug() << "PhotosModel::scanFolder() - Successfully got photo info for:" << name;
-                } catch (const std::exception& e) {
-                    qDebug() << "PhotosModel::scanFolder() - Failed to get detailed photo info for:" << name << ", error:" << e.what();
-                    // Keep basic info if detailed info fails
-                } catch (...) {
-                    qDebug() << "PhotosModel::scanFolder() - Failed to get detailed photo info for:" << name << ", unknown error";
-                    // Keep basic info if detailed info fails
-                }
-
-                photos.append(photo);
-                qDebug() << "PhotosModel::scanFolder() - Added photo to list:" << name;
-            } else {
-                qDebug() << "PhotosModel::scanFolder() - File does not match image filter, skipping:" << name;
+            // Try to get additional info
+            try {
+                qDebug() << "PhotosModel::scanFolder() - Getting detailed photo info for:" << name;
+                *photo = getPhotoInfo(camera, context, folder, name);
+                qDebug() << "PhotosModel::scanFolder() - Successfully got photo info for:" << name;
+            } catch (const std::exception& e) {
+                qDebug() << "PhotosModel::scanFolder() - Failed to get detailed photo info for:" << name << ", error:" << e.what();
+                // Keep basic info if detailed info fails
+            } catch (...) {
+                qDebug() << "PhotosModel::scanFolder() - Failed to get detailed photo info for:" << name << ", unknown error";
+                // Keep basic info if detailed info fails
             }
+
+            photos.append(photo);
+            qDebug() << "PhotosModel::scanFolder() - Added photo to list:" << name;
+
         } else {
             qDebug() << "PhotosModel::scanFolder() - Failed to get filename for index:" << i;
         }
