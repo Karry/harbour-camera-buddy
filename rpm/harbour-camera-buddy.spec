@@ -61,7 +61,7 @@ Features:
 ## for production build:
 cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DQT_QML_DEBUG=no -DSANITIZER=none -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_RPATH=%{_datadir}/%{name}/lib/: -S . -B rpmbuilddir-%{_arch}
 ## for debug build, use these cmake arguments instead:
-# cmake -DCMAKE_BUILD_TYPE=DEBUG -DQT_QML_DEBUG=yes -DSANITIZER=none -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_RPATH=%{_datadir}/%{name}/lib/: ..
+# cmake -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_CXX_FLAGS="-fno-omit-frame-pointer" -DQT_QML_DEBUG=yes -DSANITIZER=none -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_RPATH=%{_datadir}/%{name}/lib/: -S . -B rpmbuilddir-%{_arch}
 
 make -C rpmbuilddir-%{_arch} VERBOSE=1 %{?_smp_mflags}
 # << build pre
