@@ -89,16 +89,16 @@ Page {
                 onClicked: photosModel.refresh()
             }
             MenuItem {
-                text: qsTr("Select All")
-                onClicked: photosModel.selectAll(true)
+                text: qsTr("Deselect All")
+                onClicked: photosModel.selectAll(false)
             }
             MenuItem {
                 text: qsTr("Select JPEGs")
                 onClicked: photosModel.selectJpegs()
             }
             MenuItem {
-                text: qsTr("Deselect All")
-                onClicked: photosModel.selectAll(false)
+                text: qsTr("Select All")
+                onClicked: photosModel.selectAll(true)
             }
             MenuItem {
                 text: qsTr("Download Selected") + " (" + photosModel.selectedCount + ")"
