@@ -211,8 +211,10 @@ QVariant DownloadModel::data(const QModelIndex &index, int role) const {
         return item.fileName;
     case FilePathRole:
         return item.filePath;
+    case ThumbnailAvailableRole:
+        return !item.photo->thumbnailAvailable;
     case ThumbnailBase64Role:
-        return item.thumbnailBase64;
+        return QString::fromUtf8(item.photo->thumbnailData.toBase64());
     case StatusRole:
         return static_cast<int>(item.status);
     case ProgressRole:
@@ -228,6 +230,7 @@ QHash<int, QByteArray> DownloadModel::roleNames() const {
     QHash<int, QByteArray> roles;
     roles[FileNameRole] = "fileName";
     roles[FilePathRole] = "filePath";
+    roles[ThumbnailAvailableRole] = "thumbnailAvailable";
     roles[ThumbnailBase64Role] = "thumbnailBase64";
     roles[StatusRole] = "status";
     roles[ProgressRole] = "progress";
@@ -289,7 +292,6 @@ void DownloadModel::startDownload(const QVariantList &selectedPhotos) {
         item.photo = photo;
         item.fileName = generateFileName(photo);
         item.filePath = QDir(downloadPath_).filePath(item.fileName);
-        item.thumbnailBase64 = photo->thumbnailData.toBase64();
         item.status = Pending;
         item.progress = 0.0;
 
