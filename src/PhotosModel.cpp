@@ -96,7 +96,7 @@ QVariant PhotosModel::data(const QModelIndex &index, int role) const {
     case SelectedRole:
         return photo->selected;
     case ThumbnailAvailableRole:
-        return photo->thumbnail_available;
+        return photo->thumbnailAvailable;
     case ThumbnailDataRole:
         return photo->thumbnailData;
     case ThumbnailBase64Role:
@@ -544,7 +544,7 @@ void PhotosModel::loadThumbnail(int index) {
     }
 
     auto photo = photos[index];
-    if (photo->thumbnail_available) {
+    if (photo->thumbnailAvailable) {
         return; // Already loaded
     }
 
@@ -573,7 +573,7 @@ void PhotosModel::loadThumbnail(int index) {
 
                 QTimer::singleShot(0, model, [photoCopy, modelCopy, indexCopy, thumbnailData]() {
                     photoCopy->thumbnailData = thumbnailData;
-                    photoCopy->thumbnail_available = !thumbnailData.isEmpty();
+                    photoCopy->thumbnailAvailable = !thumbnailData.isEmpty();
 
                     auto modelIndex = modelCopy->index(indexCopy);
                     emit modelCopy->dataChanged(modelIndex, modelIndex,

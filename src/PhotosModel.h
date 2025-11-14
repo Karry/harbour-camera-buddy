@@ -35,10 +35,10 @@ struct PhotoInfo {
     QString mimeType;
     QSize dimensions;
     bool selected;
-    bool thumbnail_available;
+    bool thumbnailAvailable;
     QByteArray thumbnailData;
 
-    PhotoInfo() : size(0), selected(false), thumbnail_available(false) {}
+    PhotoInfo() : size(0), selected(false), thumbnailAvailable(false) {}
 
     QString toString() const;
     QString sizeString() const;
