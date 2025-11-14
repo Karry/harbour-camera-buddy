@@ -27,16 +27,18 @@
 #include <QThreadPool>
 #include <QStandardPaths>
 
+#include <cassert>
+
 class DownloadRunnable : public QRunnable {
 private:
     DownloadModel* model;
     int itemIndex;
-    QSharedPointer<CameraDevice> camera;
+    QSharedPointer<CameraDevice> cameraPtr;
     DownloadItem item;
 
 public:
     DownloadRunnable(DownloadModel* m, int index, QSharedPointer<CameraDevice> cam, const DownloadItem& itm)
-        : model(m), itemIndex(index), camera(cam), item(itm) {
+        : model(m), itemIndex(index), cameraPtr(cam), item(itm) {
         setAutoDelete(true);
     }
 
@@ -46,46 +48,54 @@ public:
         int index = itemIndex;
 
         try {
-            QByteArray photoData = downloadPhotoData(camera->camera, camera->context,
-                                                   item.photo->folder, item.photo->name);
+            // Ensure directory exists
+            QDir dir(QFileInfo(item.filePath).absolutePath());
+            if (!dir.exists()) {
+                dir.mkpath(".");
+            }
 
-            if (!photoData.isEmpty()) {
-                // Ensure directory exists
-                QDir dir(QFileInfo(item.filePath).absolutePath());
-                if (!dir.exists()) {
-                    dir.mkpath(".");
-                }
+            QFile file(item.filePath);
+            if (file.exists()) {
+                QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
+                    modelPtr->onDownloadItemFinished(index, false,
+                        QString("File already exists"));
+                });
+                return;
+            }
 
-                // Write file
-                QFile file(item.filePath);
-                if (file.open(QIODevice::WriteOnly)) {
-                    qint64 written = file.write(photoData);
-                    file.close();
+            // Write file
+            if (!file.open(QIODevice::WriteOnly)) {
+                QString errorMsg = file.errorString();
+                QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg]() {
+                    modelPtr->onDownloadItemFinished(index, false,
+                        QString("Failed to create file: %1").arg(errorMsg));
+                });
+                return;
+            }
 
-                    if (written == photoData.size()) {
-                        QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
-                            modelPtr->onDownloadItemFinished(index, true, "");
-                        });
-                        return;
-                    } else {
-                        QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
-                            modelPtr->onDownloadItemFinished(index, false, "Failed to write complete file");
-                        });
-                        return;
-                    }
-                } else {
-                    QString errorMsg = file.errorString();
-                    QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg]() {
-                        modelPtr->onDownloadItemFinished(index, false,
-                            QString("Failed to create file: %1").arg(errorMsg));
-                    });
-                    return;
-                }
-            } else {
+            if (!downloadPhotoData(
+                cameraPtr->camera,
+                cameraPtr->context,
+                item.photo->folder,
+                item.photo->name,
+                item.photo->size,
+                file)) {
+
+                file.close();
+                file.remove();
                 QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
                     modelPtr->onDownloadItemFinished(index, false, "Failed to download photo data");
                 });
+                return;
             }
+
+            file.close();
+
+            QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
+                modelPtr->onDownloadItemFinished(index, true, "");
+            });
+
+
         } catch (const std::exception& e) {
             QString errorMsg = QString::fromUtf8(e.what());
             QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg]() {
@@ -95,11 +105,54 @@ public:
     }
 
 private:
-    QByteArray downloadPhotoData(Camera* camera, GPContext* context, const QString& folder, const QString& filename) {
+    bool downloadPhotoData(Camera* camera, GPContext* context, const QString& folder, const QString& filename, uint64_t file_size, QFile &target) {
+        // try to read using gp_camera_file_read first to handle large files
+        QByteArray buff(1024 * 1024, Qt::Initialization::Uninitialized); // 1 MB buffer
+        int ret;
+        uint64_t retrieved = 0;
+        while (true) {
+            uint64_t size = buff.size();
+            ret = gp_camera_file_read(camera, folder.toUtf8().constData(), filename.toUtf8().constData(),
+                GP_FILE_TYPE_NORMAL, retrieved, buff.data(), &size, context);
+
+            if (ret==GP_ERROR_NOT_SUPPORTED) {
+                qWarning() << "gp_camera_file_read not supported, falling back to gp_camera_file_get";
+                break; // fallback to gp_camera_file_get
+            }
+            if (ret != GP_OK) {
+                qWarning() << "gp_camera_file_read failed for" << folder + "/" + filename << ", gphoto2 error code:" << ret;
+                return false;
+            }
+            if (size == 0) {
+                if (retrieved != file_size) {
+                    qWarning() << "gp_camera_file_read returned" << retrieved << "bytes for file" << folder + "/" + filename << "but expected" << file_size;
+                } else {
+                    qDebug() << "gp_camera_file_read returned" << retrieved << "bytes for file" << folder + "/" + filename;
+                }
+                return true; // completed
+            }
+            if (int64_t(size) != target.write(buff.constData(), size)) {
+                qWarning() << "Failed to write complete file chunk";
+                return false;
+            }
+            retrieved += size;
+
+            // Progress if total known
+            if (file_size > 0) {
+                double progress = double(retrieved) / double(file_size);
+                auto modelPtr = model;
+                auto indexCopy = itemIndex;
+                QTimer::singleShot(0, model, [modelPtr, indexCopy, progress]() {
+                    modelPtr->onDownloadItemProgress(indexCopy, progress);
+                });
+            }
+        }
+
+        // fallback
         CameraFile *file = nullptr;
-        int ret = gp_file_new(&file);
+        ret = gp_file_new(&file);
         if (ret != GP_OK) {
-            return QByteArray();
+            return false;
         }
 
         ret = gp_camera_file_get(camera, folder.toUtf8().constData(), filename.toUtf8().constData(),
@@ -111,15 +164,21 @@ private:
             unsigned long fileSize = 0;
             if (gp_file_get_data_and_size(file, &fileData, &fileSize) == GP_OK) {
                 data = QByteArray(fileData, fileSize);
+                if (data.size() != target.write(data)) {
+                    qWarning() << "Failed to write complete file";
+                    return false;
+                }
             } else {
                 qWarning() << "Failed to get photo data and size for" << folder + "/" + filename;
+                return false;
             }
         } else {
             qWarning() << "Failed to get photo file for" << folder + "/" + filename << ", gphoto2 error code:" << ret;
+            return false;
         }
 
         gp_file_free(file);
-        return data;
+        return true;
     }
 };
 
@@ -312,6 +371,19 @@ void DownloadModel::onDownloadItemFinished(int index, bool success, const QStrin
     } else {
         // Continue with next download
         processNextDownload();
+    }
+}
+
+void DownloadModel::onDownloadItemProgress(int index, qreal progress) {
+    if (index < 0 || index >= downloads.size()) {
+        return;
+    }
+
+    DownloadItem &item = downloads[index];
+    if (item.status == Downloading) {
+        item.progress = progress;
+        auto modelIndex = this->index(index);
+        emit dataChanged(modelIndex, modelIndex, {ProgressRole});
     }
 }
 

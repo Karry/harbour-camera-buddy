@@ -97,6 +97,7 @@ signals:
 
 public slots:
     void onDownloadItemFinished(int index, bool success, const QString &errorMessage);
+    void onDownloadItemProgress(int index, qreal progress);
 
 private:
     void updateCounts();
