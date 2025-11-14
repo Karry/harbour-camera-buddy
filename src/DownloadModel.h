@@ -35,7 +35,6 @@ struct DownloadItem {
     QSharedPointer<PhotoInfo> photo;
     QString fileName;
     QString filePath;
-    QString thumbnailBase64;
     DownloadStatus status;
     qreal progress;
     QString errorMessage;
@@ -58,10 +57,11 @@ public:
     enum Roles {
         FileNameRole = Qt::UserRole,
         FilePathRole = Qt::UserRole + 1,
-        ThumbnailBase64Role = Qt::UserRole + 2,
-        StatusRole = Qt::UserRole + 3,
-        ProgressRole = Qt::UserRole + 4,
-        ErrorMessageRole = Qt::UserRole + 5
+        ThumbnailAvailableRole = Qt::UserRole + 2,
+        ThumbnailBase64Role = Qt::UserRole + 3,
+        StatusRole = Qt::UserRole + 4,
+        ProgressRole = Qt::UserRole + 5,
+        ErrorMessageRole = Qt::UserRole + 6
     };
     Q_ENUM(Roles)
 
