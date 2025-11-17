@@ -4,12 +4,12 @@
 <context>
     <name>CamerasPage</name>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="24"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="28"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="28"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="24"/>
         <source>Settings</source>
         <translation type="unfinished">Settings</translation>
     </message>
@@ -165,7 +165,7 @@ Buddy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="92"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="100"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -175,7 +175,7 @@ Buddy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="100"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="92"/>
         <source>Deselect All</source>
         <translation type="unfinished"></translation>
     </message>
