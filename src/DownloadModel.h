@@ -96,7 +96,7 @@ signals:
     void downloadError(const QString &message);
 
 public slots:
-    void onDownloadItemFinished(int index, bool success, const QString &errorMessage);
+    void onDownloadItemFinished(int index, bool success, uint32_t elapsedMs, const QString &errorMessage);
     void onDownloadItemProgress(int index, qreal progress);
 
 private:
@@ -112,4 +112,6 @@ private:
 
     int completedCount_;
     int pendingCount_;
+
+    uint64_t downloadChunk = 512 * 1024; // 512 KB
 };

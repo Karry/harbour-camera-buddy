@@ -20,6 +20,7 @@
 #include "DownloadModel.h"
 
 #include <QDebug>
+#include <QElapsedTimer>
 #include <QTimer>
 #include <QDir>
 #include <QFile>
@@ -27,6 +28,7 @@
 #include <QThreadPool>
 #include <QStandardPaths>
 
+#include <bit>
 #include <cassert>
 
 class DownloadRunnable : public QRunnable {
@@ -35,10 +37,11 @@ private:
     int itemIndex;
     QSharedPointer<CameraDevice> cameraPtr;
     DownloadItem item;
+    uint64_t downloadChunk;
 
 public:
-    DownloadRunnable(DownloadModel* m, int index, QSharedPointer<CameraDevice> cam, const DownloadItem& itm)
-        : model(m), itemIndex(index), cameraPtr(cam), item(itm) {
+    DownloadRunnable(DownloadModel* m, int index, QSharedPointer<CameraDevice> cam, const DownloadItem& itm, uint64_t bufferSize)
+        : model(m), itemIndex(index), cameraPtr(cam), item(itm), downloadChunk(bufferSize) {
         setAutoDelete(true);
     }
 
@@ -46,6 +49,8 @@ public:
         // Copy member variables to local variables for lambda capture
         DownloadModel* modelPtr = model;
         int index = itemIndex;
+        QElapsedTimer timer;
+        timer.start();
 
         try {
             // Ensure directory exists
@@ -56,8 +61,8 @@ public:
 
             QFile file(item.filePath);
             if (file.exists()) {
-                QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
-                    modelPtr->onDownloadItemFinished(index, false,
+                QTimer::singleShot(0, modelPtr, [modelPtr, index, timer]() {
+                    modelPtr->onDownloadItemFinished(index, false, timer.elapsed(),
                         QString("File already exists"));
                 });
                 return;
@@ -66,8 +71,8 @@ public:
             // Write file
             if (!file.open(QIODevice::WriteOnly)) {
                 QString errorMsg = file.errorString();
-                QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg]() {
-                    modelPtr->onDownloadItemFinished(index, false,
+                QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg, timer]() {
+                    modelPtr->onDownloadItemFinished(index, false, timer.elapsed(),
                         QString("Failed to create file: %1").arg(errorMsg));
                 });
                 return;
@@ -83,23 +88,23 @@ public:
 
                 file.close();
                 file.remove();
-                QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
-                    modelPtr->onDownloadItemFinished(index, false, "Failed to download photo data");
+                QTimer::singleShot(0, modelPtr, [modelPtr, index, timer]() {
+                    modelPtr->onDownloadItemFinished(index, false, timer.elapsed(), "Failed to download photo data");
                 });
                 return;
             }
 
             file.close();
 
-            QTimer::singleShot(0, modelPtr, [modelPtr, index]() {
-                modelPtr->onDownloadItemFinished(index, true, "");
+            QTimer::singleShot(0, modelPtr, [modelPtr, index, timer]() {
+                modelPtr->onDownloadItemFinished(index, true, timer.elapsed(), "");
             });
 
 
         } catch (const std::exception& e) {
             QString errorMsg = QString::fromUtf8(e.what());
-            QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg]() {
-                modelPtr->onDownloadItemFinished(index, false, QString("Exception: %1").arg(errorMsg));
+            QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg, timer]() {
+                modelPtr->onDownloadItemFinished(index, false, timer.elapsed(), QString("Exception: %1").arg(errorMsg));
             });
         }
     }
@@ -107,7 +112,7 @@ public:
 private:
     bool downloadPhotoData(Camera* camera, GPContext* context, const QString& folder, const QString& filename, uint64_t file_size, QFile &target) {
         // try to read using gp_camera_file_read first to handle large files
-        QByteArray buff(1024 * 1024, Qt::Initialization::Uninitialized); // 1 MB buffer
+        QByteArray buff(static_cast<int>(downloadChunk), Qt::Initialization::Uninitialized);
         int ret;
         uint64_t retrieved = 0;
         while (true) {
@@ -343,7 +348,7 @@ void DownloadModel::retryFailed() {
     }
 }
 
-void DownloadModel::onDownloadItemFinished(int index, bool success, const QString &errorMessage) {
+void DownloadModel::onDownloadItemFinished(int index, bool success, uint32_t elapsedMs, const QString &errorMessage) {
     if (index < 0 || index >= downloads.size()) {
         return;
     }
@@ -354,6 +359,10 @@ void DownloadModel::onDownloadItemFinished(int index, bool success, const QStrin
         item.status = Completed;
         item.progress = 1.0;
         item.errorMessage.clear();
+
+        // compute next download chunk size, to have progress update at least every 200ms
+        uint64_t bp200ms = (item.photo->size * 200) / (elapsedMs + 1); // bytes per 200 ms
+        downloadChunk = qMax( std::bit_ceil(bp200ms), uint64_t(128 * 1024)); // at least 128KB
     } else {
         item.status = Error;
         item.errorMessage = errorMessage;
@@ -432,7 +441,7 @@ void DownloadModel::processNextDownload() {
             emit dataChanged(modelIndex, modelIndex);
 
             // Use camera's dedicated thread pool for gphoto2 operations
-            camera->threadPool->start(new DownloadRunnable(this, i, camera, downloads[i]));
+            camera->threadPool->start(new DownloadRunnable(this, i, camera, downloads[i], downloadChunk));
             break;
         }
     }
