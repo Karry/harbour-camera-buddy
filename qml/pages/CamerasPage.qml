@@ -21,12 +21,12 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("Refresh")
-                onClicked: cameraModel.refresh()
-            }
-            MenuItem {
                 text: qsTr("Settings")
                 onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"))
+            }
+            MenuItem {
+                text: qsTr("Refresh")
+                onClicked: cameraModel.refresh()
             }
         }
 
