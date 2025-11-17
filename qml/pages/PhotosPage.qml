@@ -115,6 +115,8 @@ Page {
             }
         }
 
+        VerticalScrollDecorator {}
+
         delegate: ListItem {
             id: listItem
             width: listView.width

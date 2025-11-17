@@ -48,6 +48,8 @@ Page {
             title: qsTr("Downloading Photos")
         }
 
+        VerticalScrollDecorator {}
+
         delegate: ListItem {
             id: listItem
             width: listView.width

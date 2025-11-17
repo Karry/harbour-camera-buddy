@@ -14,55 +14,55 @@
         <translation type="unfinished">Settings</translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="41"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="43"/>
         <source>Connected Cameras</source>
         <translation type="unfinished">Connected Cameras</translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="71"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="134"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="73"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="136"/>
         <source>Unknown Camera</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="79"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="81"/>
         <source>Model: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="79"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="88"/>
-        <location filename="../qml/pages/CamerasPage.qml" line="97"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="81"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="90"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="99"/>
         <source>Unknown</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="88"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="90"/>
         <source>Port: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="97"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="99"/>
         <source>Serial: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="115"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="117"/>
         <source>Connected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="115"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="117"/>
         <source>Disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="143"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="145"/>
         <source>No cameras found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/CamerasPage.qml" line="144"/>
+        <location filename="../qml/pages/CamerasPage.qml" line="146"/>
         <source>Make sure your camera is turned on and connected via USB or via WiFi. Pull down to refresh or add PTP/IP camera manually.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -85,37 +85,37 @@ Buddy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="124"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="126"/>
         <source>Pending...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="125"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="127"/>
         <source>Downloading... %1%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="126"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="128"/>
         <source>Completed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="127"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="129"/>
         <source>Error: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="150"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="152"/>
         <source>No downloads</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="151"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="153"/>
         <source>No photos selected for download</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/DownloadPage.qml" line="170"/>
+        <location filename="../qml/pages/DownloadPage.qml" line="172"/>
         <source>Overall Progress: %1 / %2</source>
         <translation type="unfinished"></translation>
     </message>
@@ -186,12 +186,12 @@ Buddy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="191"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="193"/>
         <source>No photos found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="192"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="194"/>
         <source>Pull down to refresh</source>
         <translation type="unfinished"></translation>
     </message>

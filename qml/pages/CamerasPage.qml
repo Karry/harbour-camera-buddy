@@ -32,6 +32,8 @@ Page {
 
         contentHeight: column.height
 
+        VerticalScrollDecorator {}
+
         Column {
             id: column
             width: camerasPage.width
