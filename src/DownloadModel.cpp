@@ -112,6 +112,7 @@ public:
 private:
     bool downloadPhotoData(Camera* camera, GPContext* context, const QString& folder, const QString& filename, uint64_t file_size, QFile &target) {
         // try to read using gp_camera_file_read first to handle large files
+        qDebug() << "Using" << downloadChunk << "bytes download chunk for" << folder + "/" + filename;
         QByteArray buff(static_cast<int>(downloadChunk), Qt::Initialization::Uninitialized);
         int ret;
         uint64_t retrieved = 0;
