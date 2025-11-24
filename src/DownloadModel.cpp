@@ -62,8 +62,8 @@ public:
             QFile file(item.filePath);
             if (file.exists()) {
                 QTimer::singleShot(0, modelPtr, [modelPtr, index, timer]() {
-                    modelPtr->onDownloadItemFinished(index, false, timer.elapsed(),
-                        QString("File already exists"));
+                    modelPtr->onDownloadItemFinished(index, true, timer.elapsed(),
+                        DownloadModel::tr("File already exists"));
                 });
                 return;
             }
@@ -73,7 +73,7 @@ public:
                 QString errorMsg = file.errorString();
                 QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg, timer]() {
                     modelPtr->onDownloadItemFinished(index, false, timer.elapsed(),
-                        QString("Failed to create file: %1").arg(errorMsg));
+                        DownloadModel::tr("Failed to create file: %1").arg(errorMsg));
                 });
                 return;
             }
@@ -89,7 +89,7 @@ public:
                 file.close();
                 file.remove();
                 QTimer::singleShot(0, modelPtr, [modelPtr, index, timer]() {
-                    modelPtr->onDownloadItemFinished(index, false, timer.elapsed(), "Failed to download photo data");
+                    modelPtr->onDownloadItemFinished(index, false, timer.elapsed(), DownloadModel::tr("Failed to download photo data"));
                 });
                 return;
             }
@@ -104,7 +104,7 @@ public:
         } catch (const std::exception& e) {
             QString errorMsg = QString::fromUtf8(e.what());
             QTimer::singleShot(0, modelPtr, [modelPtr, index, errorMsg, timer]() {
-                modelPtr->onDownloadItemFinished(index, false, timer.elapsed(), QString("Exception: %1").arg(errorMsg));
+                modelPtr->onDownloadItemFinished(index, false, timer.elapsed(), DownloadModel::tr("Exception: %1").arg(errorMsg));
             });
         }
     }
@@ -259,6 +259,10 @@ int DownloadModel::pendingCount() const {
     return pendingCount_;
 }
 
+int DownloadModel::errorCount() const {
+    return errorCount_;
+}
+
 void DownloadModel::startDownload(const QVariantList &selectedPhotos) {
     if (isDownloading_) {
         return;
@@ -359,7 +363,7 @@ void DownloadModel::onDownloadItemFinished(int index, bool success, uint32_t ela
     if (success) {
         item.status = Completed;
         item.progress = 1.0;
-        item.errorMessage.clear();
+        item.errorMessage = errorMessage; // may contain warning message (already exists etc.)
 
         // compute next download chunk size, to have progress update at least every 200ms
         uint64_t bp200ms = (item.photo->size * 200) / (elapsedMs + 1); // bytes per 200 ms
@@ -402,9 +406,13 @@ void DownloadModel::onDownloadItemProgress(int index, qreal progress) {
 void DownloadModel::updateCounts() {
     int completed = 0;
     int pending = 0;
+    int error = 0;
 
     for (const DownloadItem &item : downloads) {
         switch (item.status) {
+        case Error:
+            error++;
+            break;
         case Completed:
             completed++;
             break;
@@ -425,6 +433,11 @@ void DownloadModel::updateCounts() {
     if (pendingCount_ != pending) {
         pendingCount_ = pending;
         emit pendingCountChanged();
+    }
+
+    if (errorCount_ != error) {
+        errorCount_ = error;
+        emit errorCountChanged();
     }
 }
 
