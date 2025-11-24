@@ -47,6 +47,7 @@ class DownloadModel : public QAbstractListModel {
     Q_PROPERTY(QString downloadPath READ downloadPath WRITE setDownloadPath NOTIFY downloadPathChanged)
     Q_PROPERTY(int totalCount READ totalCount NOTIFY totalCountChanged)
     Q_PROPERTY(int completedCount READ completedCount NOTIFY completedCountChanged)
+    Q_PROPERTY(int errorCount READ errorCount NOTIFY errorCountChanged)
     Q_PROPERTY(int pendingCount READ pendingCount NOTIFY pendingCountChanged)
     Q_PROPERTY(bool isDownloading READ isDownloading NOTIFY isDownloadingChanged)
 
@@ -77,6 +78,7 @@ public:
     int totalCount() const { return downloads.size(); }
     int completedCount() const;
     int pendingCount() const;
+    int errorCount() const;
     bool isDownloading() const { return isDownloading_; }
 
     // Methods
@@ -90,6 +92,7 @@ signals:
     void totalCountChanged();
     void completedCountChanged();
     void pendingCountChanged();
+    void errorCountChanged();
     void isDownloadingChanged();
     void downloadFinished();
     void downloadProgress(int current, int total);
@@ -112,6 +115,7 @@ private:
 
     int completedCount_;
     int pendingCount_;
+    int errorCount_;
 
     uint64_t downloadChunk = 512 * 1024; // 512 KB
 };

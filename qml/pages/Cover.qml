@@ -20,26 +20,61 @@
 import QtQuick 2.6
 import Sailfish.Silica 1.0
 
+import ".." // Global singleton
+
 CoverBackground {
     id: cover
 
-    Label {
-        id: label
+    Column {
         anchors.centerIn: parent
-        text: qsTr("Camera\nBuddy")
-        horizontalAlignment: Text.AlignHCenter
-        font.pixelSize: Theme.fontSizeLarge
-    }
+        width: parent.width - 2 * Theme.paddingLarge
+        spacing: Theme.paddingMedium
 
-    CoverActionList {
-        id: coverAction
+        Label {
+            id: label
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: qsTr("Camera\nBuddy")
+            horizontalAlignment: Text.AlignHCenter
+            font.pixelSize: Theme.fontSizeLarge
+        }
 
-        CoverAction {
-            iconSource: "image://theme/icon-cover-refresh"
-            onTriggered: {
-                // TODO: Quick camera detection
-                console.log("Cover action: detect cameras")
+        // Download progress indicator
+        Column {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: parent.width
+            spacing: Theme.paddingSmall
+            visible: Global.isDownloading || Global.downloadTotalCount > 0
+
+            Image {
+                anchors.horizontalCenter: parent.horizontalCenter
+                source: "image://theme/icon-m-download"
+                width: Theme.iconSizeMedium
+                height: Theme.iconSizeMedium
+            }
+
+            Label {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("Downloading...")
+                font.pixelSize: Theme.fontSizeSmall
+                color: Theme.secondaryColor
+                visible: Global.isDownloading
+            }
+
+            Label {
+                anchors.horizontalCenter: parent.horizontalCenter
+                text: qsTr("%1 / %2").arg(Global.downloadCompletedCount).arg(Global.downloadTotalCount)
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: Theme.secondaryColor
+            }
+
+            ProgressBar {
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
+                value: Global.downloadProgress
+                minimumValue: 0
+                maximumValue: 1
             }
         }
     }
+
 }

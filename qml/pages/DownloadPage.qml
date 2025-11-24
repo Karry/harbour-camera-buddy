@@ -21,6 +21,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.camera.buddy 1.0
 
+import ".." // Global singleton
+
 Page {
     id: downloadPage
 
@@ -37,14 +39,24 @@ Page {
         
         onDownloadFinished: {
             console.log("All downloads finished")
+            Global.resetDownloadProgress()
         }
         
         onDownloadProgress: {
             console.log("Download progress:", current, "/", total)
+            Global.updateDownloadProgress(current, total)
         }
         
         onDownloadError: {
             console.log("Download error:", message)
+        }
+
+        onCompletedCountChanged: {
+            Global.updateDownloadProgress(downloadModel.completedCount, downloadModel.totalCount)
+        }
+
+        onTotalCountChanged: {
+            Global.updateDownloadProgress(downloadModel.completedCount, downloadModel.totalCount)
         }
     }
 
@@ -55,6 +67,14 @@ Page {
 
         if (selectedPhotos.length > 0) {
             downloadModel.startDownload(selectedPhotos)
+            Global.updateDownloadProgress(0, selectedPhotos.length)
+        }
+    }
+
+    Component.onDestruction: {
+        // Reset global progress when page is destroyed and downloads are finished
+        if (downloadModel.completedCount === downloadModel.totalCount) {
+            Global.resetDownloadProgress()
         }
     }
 
@@ -144,7 +164,12 @@ Page {
                             switch (model.status) {
                                 case 0: return qsTr("Pending...")
                                 case 1: return qsTr("Downloading... %1%").arg(Math.round(model.progress * 100))
-                                case 2: return qsTr("Completed")
+                                case 2:
+                                    if (model.errorMessage && model.errorMessage.length > 0) {
+                                        return qsTr("Completed: %1").arg(model.errorMessage)
+                                    } else {
+                                        return qsTr("Completed")
+                                    }
                                 case 3: return qsTr("Error: %1").arg(model.errorMessage)
                                 default: return ""
                             }
