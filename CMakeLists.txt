@@ -6,7 +6,7 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 
 cmake_policy(SET CMP0048 NEW)
-project(harbour-camera-buddy VERSION 0.1.0 LANGUAGES C CXX)
+project(harbour-camera-buddy VERSION 0.2.0 LANGUAGES C CXX)
 
 # project version
 set(CAMERA_BUDDY_MAJOR_VERSION ${PROJECT_VERSION_MAJOR})

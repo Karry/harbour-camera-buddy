@@ -15,7 +15,7 @@ Name:       harbour-camera-buddy
 # << macros
 
 Summary:    Camera Buddy for Sailfish OS
-Version:    0.1.0
+Version:    0.2.0
 Release:    1
 Group:      Qt/Qt
 License:    GPL-2.0-or-later
