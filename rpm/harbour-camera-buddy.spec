@@ -109,6 +109,13 @@ sha1sum    %{buildroot}%{_bindir}/%{name}
 # << files
 
 %changelog
+* Tue Nov 25 2025 Lukas Karas <lukas.karas@centrum.cz> - 0.2.0-1
+- do not filter images files, allow to download video files too
+- use "file read" gphoto api to download files in chunks, to avoid high memory usage on large files
+- show download progress per file
+- show download progress on app cover
+- minor UI improvements
+
 * Wed Oct 22 2025 Lukas Karas <lukas.karas@centrum.cz> - 0.1.0-1
 - Initial release
 - USB and WiFi (PTP/IP) camera support, using GPhoto library, see https://gphoto.sourceforge.io/proj/libgphoto2/support.php
