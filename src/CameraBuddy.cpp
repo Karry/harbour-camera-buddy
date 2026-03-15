@@ -46,6 +46,7 @@
 #include <iostream>
 #include <locale>
 #include <sstream>
+#include <cassert>
 
 #ifdef QT_QML_DEBUG
 #include <QtQuick>
@@ -76,7 +77,6 @@ std::string versionStrings(){
 
 CameraBuddy::CameraBuddy(QObject *parent)
     : QObject(parent)
-    , m_app(nullptr)
 {
 }
 
@@ -95,11 +95,6 @@ bool CameraBuddy::createDirectory(const QString &path)
         qWarning() << "Failed to create directory:" << path;
         return false;
     }
-}
-
-void CameraBuddy::setApp(QGuiApplication* app)
-{
-    m_app = app;
 }
 
 /**
@@ -130,16 +125,15 @@ void CameraBuddy::initializeGPhoto2()
     gp_log_add_func(GP_LOG_DEBUG, gp_log, nullptr);
 }
 
-void CameraBuddy::setupTranslations()
+void CameraBuddy::setupTranslations(QGuiApplication *app)
 {
-    if (!m_app) return;
+    assert(app);
 
     // Install translator
-    QTranslator translator;
     QLocale locale;
     if (translator.load(locale.name(), SailfishApp::pathTo("translations").toLocalFile())) {
         qDebug() << "Install translator for locale " << locale << "/" << locale.name();
-        QGuiApplication::installTranslator(&translator);
+        app->installTranslator(&translator);
     } else {
         qWarning() << "Can't load translator for locale" << locale << "/" << locale.name() <<
                    "(" << SailfishApp::pathTo("translations").toLocalFile() << ")";
@@ -153,10 +147,10 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 
     QGuiApplication *app = SailfishApp::application(argc, argv);
 
-    QGuiApplication::setOrganizationDomain("camera-buddy.karry.cz");
-    QGuiApplication::setOrganizationName("cz.karry.camera-buddy"); // needed for Sailjail
-    QGuiApplication::setApplicationName("CameraBuddy");
-    QGuiApplication::setApplicationVersion(CAMERA_BUDDY_VERSION_STRING);
+    app->setOrganizationDomain("camera-buddy.karry.cz");
+    app->setOrganizationName("cz.karry.camera-buddy"); // needed for Sailjail
+    app->setApplicationName("CameraBuddy");
+    app->setApplicationVersion(CAMERA_BUDDY_VERSION_STRING);
 
     std::cout << "Starting " << versionStrings() << std::endl;
 
@@ -174,10 +168,9 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 
     // Create main application object
     CameraBuddy cameraBuddy;
-    cameraBuddy.setApp(app);
 
     // Setup translations
-    cameraBuddy.setupTranslations();
+    cameraBuddy.setupTranslations(app);
 
     // Initialize GPhoto2
     cameraBuddy.initializeGPhoto2();
@@ -203,8 +196,8 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     view->rootContext()->setContextProperty("cameraBuddy", &cameraBuddy);
     view->rootContext()->setContextProperty("settings", &settings);
     view->setSource(SailfishApp::pathTo("qml/main.qml"));
-    view->show();
+    view->showFullScreen();
 
-    return QGuiApplication::exec();
+    return app->exec();
 }
 
