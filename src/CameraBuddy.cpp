@@ -37,6 +37,7 @@
 #include <QTranslator>
 #include <QLocale>
 #include <QDebug>
+#include <QDir>
 
 // GPhoto2 includes
 #include <gphoto2/gphoto2.h>
@@ -82,6 +83,18 @@ CameraBuddy::CameraBuddy(QObject *parent)
 QString CameraBuddy::version()
 {
     return {CAMERA_BUDDY_VERSION_STRING};
+}
+
+bool CameraBuddy::createDirectory(const QString &path)
+{
+    QDir dir;
+    if (dir.mkpath(path)) {
+        qDebug() << "Created directory:" << path;
+        return true;
+    } else {
+        qWarning() << "Failed to create directory:" << path;
+        return false;
+    }
 }
 
 void CameraBuddy::setApp(QGuiApplication* app)

@@ -158,6 +158,20 @@ Buddy</source>
     </message>
 </context>
 <context>
+    <name>NewFolderDialog</name>
+    <message>
+        <location filename="../qml/dialogs/NewFolderDialog.qml" line="39"/>
+        <source>Create</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/dialogs/NewFolderDialog.qml" line="45"/>
+        <location filename="../qml/dialogs/NewFolderDialog.qml" line="46"/>
+        <source>Folder name</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PhotosPage</name>
     <message>
         <location filename="../qml/pages/PhotosPage.qml" line="55"/>
@@ -165,43 +179,43 @@ Buddy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="102"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="134"/>
         <source>Photos</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="107"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="139"/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="119"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="151"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="115"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="147"/>
         <source>Select JPEGs</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="111"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="143"/>
         <source>Deselect All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="123"/>
-        <location filename="../qml/pages/PhotosPage.qml" line="132"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="155"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="164"/>
         <source>Download Selected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="212"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="244"/>
         <source>No photos found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="213"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="245"/>
         <source>Pull down to refresh</source>
         <translation type="unfinished"></translation>
     </message>

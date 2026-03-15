@@ -33,6 +33,8 @@ public:
 
     static QString version();
 
+    Q_INVOKABLE bool createDirectory(const QString &path);
+
     void initializeGPhoto2();
     void setupTranslations();
     void setApp(QGuiApplication* app);

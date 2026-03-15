@@ -55,6 +55,38 @@ Page {
             title: qsTr("Download to")
             path: StandardPaths.pictures
             property bool downloadRequested: false
+
+            IconButton {
+                anchors {
+                    right: parent.right
+                    bottom: parent.bottom
+                    rightMargin: Theme.horizontalPageMargin
+                    bottomMargin: Theme.paddingLarge
+                }
+                icon.source: "image://theme/icon-m-add"
+                icon.sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                width: Theme.itemSizeMedium
+                height: Theme.itemSizeMedium
+                z: 1
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: width / 2
+                    color: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
+                    z: -1
+                }
+
+                onClicked: {
+                    var dialog = pageStack.push(Qt.resolvedUrl("../dialogs/NewFolderDialog.qml"))
+                    dialog.accepted.connect(function() {
+                        var newPath = folderPickerDialog2.path + "/" + dialog.folderName
+                        if (cameraBuddy.createDirectory(newPath)) {
+                            folderPickerDialog2.path = newPath
+                        }
+                    })
+                }
+            }
+
             onAccepted: {
                 console.log("Selected download folder:", selectedPath);
                 downloadRequested = true; // Warning: cannot pop while transition is in progress, so we wait until dialog is inactive

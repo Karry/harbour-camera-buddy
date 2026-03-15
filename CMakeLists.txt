@@ -152,6 +152,7 @@ set(QML_FILES
     qml/pages/SettingsPage.qml
     qml/pages/DownloadPage.qml
     qml/pages/Cover.qml
+    qml/dialogs/NewFolderDialog.qml
 )
 add_executable(harbour-camera-buddy
     ${SOURCE_FILES}
