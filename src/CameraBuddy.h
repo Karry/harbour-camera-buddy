@@ -22,6 +22,7 @@
 #include <QGuiApplication>
 #include <QObject>
 #include <QLocale>
+#include <QTranslator>
 
 class CameraBuddy : public QObject
 {
@@ -36,12 +37,8 @@ public:
     Q_INVOKABLE bool createDirectory(const QString &path);
 
     void initializeGPhoto2();
-    void setupTranslations();
-    void setApp(QGuiApplication* app);
-
-signals:
-
+    void setupTranslations(QGuiApplication *app);
 
 private:
-    QGuiApplication* m_app;
+    QTranslator translator;
 };
