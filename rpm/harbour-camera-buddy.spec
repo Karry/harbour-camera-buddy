@@ -15,7 +15,7 @@ Name:       harbour-camera-buddy
 # << macros
 
 Summary:    Camera Buddy for Sailfish OS
-Version:    0.2.0
+Version:    0.3.0
 Release:    1
 Group:      Qt/Qt
 License:    GPL-2.0-or-later
@@ -109,6 +109,9 @@ sha1sum    %{buildroot}%{_bindir}/%{name}
 # << files
 
 %changelog
+* Sun Mar 15 2026 Lukas Karas <lukas.karas@centrum.cz> - 0.3.0-1
+- button for creating new folder for the download
+
 * Tue Nov 25 2025 Lukas Karas <lukas.karas@centrum.cz> - 0.2.0-1
 - do not filter images files, allow to download video files too
 - use "file read" gphoto api to download files in chunks, to avoid high memory usage on large files
