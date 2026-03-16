@@ -109,9 +109,10 @@ sha1sum    %{buildroot}%{_bindir}/%{name}
 # << files
 
 %changelog
-* Sun Mar 15 2026 Lukas Karas <lukas.karas@centrum.cz> - 0.3.0-1
+* Mon Mar 16 2026 Lukas Karas <lukas.karas@centrum.cz> - 0.3.0-1
 - button for creating new folder for the download
 - Czech translation
+- add page to show bigger thumbnail
 
 * Tue Nov 25 2025 Lukas Karas <lukas.karas@centrum.cz> - 0.2.0-1
 - do not filter images files, allow to download video files too

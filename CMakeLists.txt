@@ -151,6 +151,7 @@ set(QML_FILES
     qml/pages/PhotosPage.qml
     qml/pages/SettingsPage.qml
     qml/pages/DownloadPage.qml
+    qml/pages/PhotoPreviewPage.qml
     qml/pages/Cover.qml
     qml/dialogs/NewFolderDialog.qml
 )

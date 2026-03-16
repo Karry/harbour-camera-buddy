@@ -205,6 +205,20 @@ Page {
                             }
                         }
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            if (model.thumbnailAvailable) {
+                                pageStack.push(Qt.resolvedUrl("PhotoPreviewPage.qml"), {
+                                    photoName: model.name,
+                                    thumbnailBase64: model.thumbnailBase64,
+                                    sizeString: model.sizeString,
+                                    dateTime: model.dateTime
+                                })
+                            }
+                        }
+                    }
                 }
 
                 Column {

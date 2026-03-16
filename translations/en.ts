@@ -238,12 +238,12 @@ Buddy</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="244"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="258"/>
         <source>No photos found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/PhotosPage.qml" line="245"/>
+        <location filename="../qml/pages/PhotosPage.qml" line="259"/>
         <source>Pull down to refresh</source>
         <translation type="unfinished"></translation>
     </message>
