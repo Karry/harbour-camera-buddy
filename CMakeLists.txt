@@ -200,6 +200,7 @@ set(TRANSLATION_TS_FILES
     translations/en.ts
 
     translations/cs.ts
+    translations/nb.ts
 )
 
 # source files that may contains translatable phrases (see tr, qsTr, QT_TRANSLATE_NOOP functions)
